@@ -91,8 +91,22 @@ export default async function FilmographyPage() {
           {films.map((film: any, index: number) => (
             <div key={index} className="glass-card overflow-hidden grid grid-cols-1 lg:grid-cols-12 border border-white/5">
               {/* Poster Cover */}
-              <div className="lg:col-span-4 relative aspect-[4/3] lg:aspect-square bg-zinc-900">
-                <img src={film.image} alt={film.title} className="w-full h-full object-cover" />
+              <div className="lg:col-span-4 relative aspect-[4/3] lg:aspect-square bg-zinc-950 flex items-center justify-center overflow-hidden border-r border-white/5">
+                {film.link ? (
+                  <a href={film.link} target="_blank" rel="noopener noreferrer" className="w-full h-full block group/poster">
+                    <img 
+                      src={film.image} 
+                      alt={film.title} 
+                      className="w-full h-full object-contain transition-transform duration-500 group-hover/poster:scale-105" 
+                    />
+                  </a>
+                ) : (
+                  <img 
+                    src={film.image} 
+                    alt={film.title} 
+                    className="w-full h-full object-contain" 
+                  />
+                )}
               </div>
               {/* Content Panel */}
               <div className="lg:col-span-8 p-8 flex flex-col justify-between gap-6 text-left">
