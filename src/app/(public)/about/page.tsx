@@ -1,0 +1,72 @@
+import React from "react";
+import { Shield, Sparkles, Film, Compass } from "lucide-react";
+
+export default async function AboutUsPage() {
+
+  return (
+    <div className="container mx-auto px-4 py-16 flex flex-col gap-16">
+      {/* Editorial Banner */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div className="lg:col-span-7 flex flex-col gap-6 text-left">
+          <div>
+            <p className="text-xs font-bold text-gold-accent tracking-widest uppercase">The Banner</p>
+            <h1 className="text-4xl md:text-5xl font-bold mt-2 text-white">Ferywala Communications</h1>
+            <div className="h-0.5 w-16 bg-gold-accent mt-4" />
+          </div>
+          <p className="text-white/80 leading-relaxed text-base md:text-lg">
+            Ferywala Communications is a leading audiovisual production banner in Bangladesh. Founded by filmmaker and creative director Rana Masud in 2006, the agency has spent decades producing high-fidelity advertising materials, public service broadcasts (PSAs), social awareness docudramas, and independent shorts.
+          </p>
+          <p className="text-white/70 leading-relaxed text-sm">
+            We focus on storytelling through sophisticated cinematography, detailed scene construction, and custom sound design. We help brand campaigns and social behavior change programs communicate impactfully with large target audiences.
+          </p>
+        </div>
+
+        <div className="lg:col-span-5 flex justify-center">
+          <div className="relative w-full max-w-[340px] aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-zinc-950 flex items-center justify-center p-6">
+            <div className="text-center flex flex-col gap-2">
+              <Film className="w-12 h-12 text-gold-accent mx-auto animate-pulse" />
+              <h3 className="text-xl font-bold text-white tracking-widest uppercase mt-2">Ferywala</h3>
+              <p className="text-xs text-white/40">Communications</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Core Pillars */}
+      <section className="flex flex-col gap-8">
+        <h2 className="text-2xl font-bold text-white text-center">Core Operations</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="glass-card p-8 flex flex-col gap-4 text-center">
+            <div className="mx-auto w-12 h-12 rounded-lg bg-gold-accent/10 border border-gold-accent/20 flex items-center justify-center text-gold-accent">
+              <Sparkles className="h-6 w-6" />
+            </div>
+            <h3 className="text-lg font-bold text-white">Brand Promotion</h3>
+            <p className="text-white/60 text-xs leading-relaxed">
+              Conceptualizing and executing creative television commercials (TVCs) that drive market growth and strengthen brand value.
+            </p>
+          </div>
+
+          <div className="glass-card p-8 flex flex-col gap-4 text-center">
+            <div className="mx-auto w-12 h-12 rounded-lg bg-gold-accent/10 border border-gold-accent/20 flex items-center justify-center text-gold-accent">
+              <Shield className="h-6 w-6" />
+            </div>
+            <h3 className="text-lg font-bold text-white">Behavior Change</h3>
+            <p className="text-white/60 text-xs leading-relaxed">
+              Developing educational materials and PSAs for social development agencies, promoting health, child education, and peace.
+            </p>
+          </div>
+
+          <div className="glass-card p-8 flex flex-col gap-4 text-center">
+            <div className="mx-auto w-12 h-12 rounded-lg bg-gold-accent/10 border border-gold-accent/20 flex items-center justify-center text-gold-accent">
+              <Compass className="h-6 w-6" />
+            </div>
+            <h3 className="text-lg font-bold text-white">Documentary Cinema</h3>
+            <p className="text-white/60 text-xs leading-relaxed">
+              Documenting cultural heritage, history, and social justice narratives through long and short-form non-fiction films.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
