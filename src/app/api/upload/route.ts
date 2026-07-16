@@ -4,10 +4,8 @@ import { r2Client, R2_BUCKET_NAME, R2_PUBLIC_URL, isR2Configured } from "@/lib/r
 import { cookies } from "next/headers";
 import { verifySession } from "@/lib/auth";
 import crypto from "crypto";
-import fs from "fs/promises";
-import path from "path";
-
-const MAX_LOCAL_SIZE = 1 * 1024 * 1024; // 1MB threshold for local storage
+import { connectToDatabase } from "@/lib/mongodb";
+import { GridFSBucket } from "mongodb";
 
 export async function POST(req: NextRequest) {
   try {
@@ -31,45 +29,52 @@ export async function POST(req: NextRequest) {
     // Generate unique name using hash to prevent duplicates/collisions
     const hash = crypto.createHash("md5").update(buffer).digest("hex");
     const ext = file.name.split(".").pop() || "png";
-    const filename = `uploads/${hash}.${ext}`;
-
+    const filename = `${hash}.${ext}`;
     const contentType = file.type || "image/png";
 
-    // If the image size is small, store it locally on the public content folder
-    if (buffer.length <= MAX_LOCAL_SIZE) {
-      const localUploadDir = path.join(process.cwd(), "public", "content", "uploads");
-      await fs.mkdir(localUploadDir, { recursive: true });
-      const localFilePath = path.join(localUploadDir, `${hash}.${ext}`);
-      await fs.writeFile(localFilePath, buffer);
+    // 1. If Cloudflare R2 is configured, upload to R2
+    if (isR2Configured) {
+      await r2Client.send(
+        new PutObjectCommand({
+          Bucket: R2_BUCKET_NAME,
+          Key: `uploads/${filename}`,
+          Body: buffer,
+          ContentType: contentType,
+        })
+      );
 
-      const publicUrl = `/content/uploads/${hash}.${ext}`;
+      const cleanBaseUrl = R2_PUBLIC_URL.endsWith("/")
+        ? R2_PUBLIC_URL
+        : `${R2_PUBLIC_URL}/`;
+      const publicUrl = `${cleanBaseUrl}uploads/${filename}`;
+
       return NextResponse.json({ url: publicUrl, filename });
     }
 
-    // For larger files, proceed with Cloudflare R2 upload (requires configuration)
-    if (!isR2Configured) {
-      return NextResponse.json(
-        { error: "Cloudflare R2 is not fully configured in your environment for large files." },
-        { status: 500 }
-      );
+    // 2. Otherwise, save the file to MongoDB GridFS (safe for serverless/Vercel)
+    const conn = await connectToDatabase();
+    const db = conn.connection.db;
+    if (!db) {
+      throw new Error("Failed to retrieve native MongoDB database reference");
+    }
+    const bucket = new GridFSBucket(db, { bucketName: "media" });
+
+    // Check if the file already exists in GridFS to avoid duplicating uploads
+    const existingFiles = await bucket.find({ filename }).toArray();
+    if (existingFiles.length === 0) {
+      await new Promise<void>((resolve, reject) => {
+        const uploadStream = bucket.openUploadStream(filename, {
+          metadata: { contentType },
+        });
+        uploadStream.write(buffer);
+        uploadStream.end();
+        uploadStream.on("finish", () => resolve());
+        uploadStream.on("error", (err) => reject(err));
+      });
     }
 
-    // Put Object in S3/R2 Bucket
-    await r2Client.send(
-      new PutObjectCommand({
-        Bucket: R2_BUCKET_NAME,
-        Key: filename,
-        Body: buffer,
-        ContentType: contentType,
-      })
-    );
-
-    // Construct the public URL for serving this asset
-    const cleanBaseUrl = R2_PUBLIC_URL.endsWith("/")
-      ? R2_PUBLIC_URL
-      : `${R2_PUBLIC_URL}/`;
-    const publicUrl = `${cleanBaseUrl}${filename}`;
-
+    // Return the dynamic route URL pointing to our GridFS serving endpoint
+    const publicUrl = `/api/upload/${filename}`;
     return NextResponse.json({ url: publicUrl, filename });
   } catch (error: any) {
     console.error("Upload error details:", error);
