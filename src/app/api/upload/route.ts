@@ -4,6 +4,10 @@ import { r2Client, R2_BUCKET_NAME, R2_PUBLIC_URL, isR2Configured } from "@/lib/r
 import { cookies } from "next/headers";
 import { verifySession } from "@/lib/auth";
 import crypto from "crypto";
+import fs from "fs/promises";
+import path from "path";
+
+const MAX_LOCAL_SIZE = 1 * 1024 * 1024; // 1MB threshold for local storage
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,13 +16,6 @@ export async function POST(req: NextRequest) {
     const isAuthenticated = await verifySession(token);
     if (!isAuthenticated) {
       return NextResponse.json({ error: "Unauthorized access." }, { status: 401 });
-    }
-
-    if (!isR2Configured) {
-      return NextResponse.json(
-        { error: "Cloudflare R2 is not fully configured in your environment." },
-        { status: 500 }
-      );
     }
 
     const formData = await req.formData();
@@ -37,6 +34,25 @@ export async function POST(req: NextRequest) {
     const filename = `uploads/${hash}.${ext}`;
 
     const contentType = file.type || "image/png";
+
+    // If the image size is small, store it locally on the public content folder
+    if (buffer.length <= MAX_LOCAL_SIZE) {
+      const localUploadDir = path.join(process.cwd(), "public", "content", "uploads");
+      await fs.mkdir(localUploadDir, { recursive: true });
+      const localFilePath = path.join(localUploadDir, `${hash}.${ext}`);
+      await fs.writeFile(localFilePath, buffer);
+
+      const publicUrl = `/content/uploads/${hash}.${ext}`;
+      return NextResponse.json({ url: publicUrl, filename });
+    }
+
+    // For larger files, proceed with Cloudflare R2 upload (requires configuration)
+    if (!isR2Configured) {
+      return NextResponse.json(
+        { error: "Cloudflare R2 is not fully configured in your environment for large files." },
+        { status: 500 }
+      );
+    }
 
     // Put Object in S3/R2 Bucket
     await r2Client.send(
