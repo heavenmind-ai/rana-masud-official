@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Save, Settings, Compass, Link as LinkIcon, AlertCircle, CheckCircle2, Plus, Trash2, Lock } from "lucide-react";
+import { Save, Settings, Compass, Link as LinkIcon, AlertCircle, CheckCircle2, Plus, Trash2, Lock, Image as ImageIcon } from "lucide-react";
 
 interface MenuLink {
   label: string;
@@ -16,8 +16,7 @@ interface Socials {
 }
 
 interface HeaderData {
-  logoText: string;
-  logoIcon: string;
+  logoImage?: string;
   menuLinks: MenuLink[];
 }
 
@@ -33,19 +32,35 @@ interface FooterData {
 
 export default function AdminSettingsPage() {
   const [header, setHeader] = useState<HeaderData>({
-    logoText: "Rana Masud",
-    logoIcon: "Film",
-    menuLinks: [],
+    logoImage: "",
+    menuLinks: [
+      { label: "Home", href: "/" },
+      { label: "Biography", href: "/biography" },
+      { label: "Filmography", href: "/filmography" },
+      { label: "Awards", href: "/awards" },
+      { label: "Festivals", href: "/festivals" },
+      { label: "Gallery", href: "/gallery" },
+      { label: "Press", href: "/press" },
+      { label: "TV Shows", href: "/tv-shows" },
+      { label: "Contact", href: "/contact" },
+    ],
   });
 
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+
   const [footer, setFooter] = useState<FooterData>({
-    copyrightText: "",
+    copyrightText: `© ${new Date().getFullYear()} Rana Masud. All Rights Reserved. Powered by Next.js.`,
     brandName: "RANA MASUD",
-    brandSubtitle: "",
-    contactEmail: "",
-    contactPhone: "",
-    address: "",
-    socials: { facebook: "", twitter: "", youtube: "", imdb: "" },
+    brandSubtitle: "Film Director • Producer • Teacher",
+    contactEmail: "info@ranamasudbd.com",
+    contactPhone: "+8801711704545",
+    address: "Block: A, Road: 02, House: 73, Flat: A/9, Niketon, Dhaka, Bangladesh.",
+    socials: {
+      facebook: "https://facebook.com",
+      twitter: "https://twitter.com",
+      youtube: "https://youtube.com",
+      imdb: "https://www.imdb.com/name/nm7851085/",
+    },
   });
 
   const [loading, setLoading] = useState(true);
@@ -67,7 +82,15 @@ export default function AdminSettingsPage() {
         if (!res.ok) throw new Error("Failed to load settings");
         const data = await res.json();
         
-        if (data.header) setHeader(data.header);
+        if (data.header) {
+          setHeader((prev) => ({
+            ...prev,
+            ...data.header,
+            menuLinks: data.header.menuLinks && data.header.menuLinks.length > 0
+              ? data.header.menuLinks
+              : prev.menuLinks
+          }));
+        }
         if (data.footer) setFooter(data.footer);
 
         // Fetch security settings email address safely
@@ -85,6 +108,35 @@ export default function AdminSettingsPage() {
     }
     loadSettings();
   }, []);
+
+  const handleUploadLogo = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingLogo(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Upload failed");
+      const { url } = await res.json();
+
+      setHeader((prev) => ({
+        ...prev,
+        logoImage: url,
+      }));
+    } catch (err) {
+      console.error(err);
+      alert("Logo image upload failed.");
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
 
   const handleSave = async (key: "header" | "footer", data: any) => {
     setSaveStatus("saving");
@@ -235,24 +287,45 @@ export default function AdminSettingsPage() {
             Navigation Header Settings
           </h3>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] text-white/40 font-bold uppercase">Logo / Branding Text</label>
-            <input
-              type="text"
-              value={header.logoText}
-              onChange={(e) => setHeader({ ...header, logoText: e.target.value })}
-              className="px-3 py-2 rounded-md border border-white/10 bg-white/5 text-white text-xs outline-none focus:border-gold-accent/40"
-            />
-          </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] text-white/40 font-bold uppercase">Logo Icon Name (Lucide)</label>
-            <input
-              type="text"
-              value={header.logoIcon}
-              onChange={(e) => setHeader({ ...header, logoIcon: e.target.value })}
-              className="px-3 py-2 rounded-md border border-white/10 bg-white/5 text-white text-xs outline-none focus:border-gold-accent/40"
-            />
+
+          <div className="flex flex-col gap-2">
+            <label className="text-[10px] text-white/40 font-bold uppercase">Header Logo Image</label>
+            {header.logoImage ? (
+              <div className="flex items-center gap-4 bg-white/5 p-3 rounded-lg border border-white/5">
+                <img
+                  src={header.logoImage}
+                  alt="Logo Preview"
+                  className="h-10 max-w-[150px] object-contain bg-zinc-950 p-1.5 rounded border border-white/10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setHeader({ ...header, logoImage: "" })}
+                  className="text-red-500 hover:text-red-400 text-xs font-semibold px-2.5 py-1 rounded bg-red-500/10 hover:bg-red-500/15 cursor-pointer transition-all"
+                >
+                  Remove Logo
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <label className="flex-1 flex flex-col items-center justify-center border border-dashed border-white/10 hover:border-gold-accent/40 rounded-lg p-4 bg-white/5 cursor-pointer group hover:bg-white/[0.07] transition-all">
+                  <div className="flex flex-col items-center gap-1.5 text-center text-white/50 group-hover:text-gold-accent">
+                    <ImageIcon className="h-5 w-5" />
+                    <span className="text-[10px] font-semibold uppercase tracking-wide">
+                      {uploadingLogo ? "Uploading..." : "Upload Logo Image"}
+                    </span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleUploadLogo}
+                    className="hidden"
+                    disabled={uploadingLogo}
+                  />
+                </label>
+              </div>
+            )}
+            <p className="text-[10px] text-white/30 italic">Upload an image to override dynamic text/icon logo branding.</p>
           </div>
 
           <div className="flex flex-col gap-3">

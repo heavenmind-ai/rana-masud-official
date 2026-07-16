@@ -254,8 +254,7 @@ async function migrate() {
     console.log("\nSetting up initial dynamic settings...");
 
     const defaultHeader = {
-      logoText: "Rana Masud",
-      logoIcon: "Film",
+      logoImage: "",
       menuLinks: [
         { label: "Home", href: "/" },
         { label: "Biography", href: "/biography" },
