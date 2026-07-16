@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Save, Settings, Compass, Link as LinkIcon, AlertCircle, CheckCircle2, Plus, Trash2 } from "lucide-react";
+import { Save, Settings, Compass, Link as LinkIcon, AlertCircle, CheckCircle2, Plus, Trash2, Lock } from "lucide-react";
 
 interface MenuLink {
   label: string;
@@ -52,6 +52,14 @@ export default function AdminSettingsPage() {
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
+  const [securityEmail, setSecurityEmail] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [securityStatus, setSecurityStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
+  const [securityErrorMsg, setSecurityErrorMsg] = useState("");
+  const [securitySuccessMsg, setSecuritySuccessMsg] = useState("");
+
   useEffect(() => {
     async function loadSettings() {
       try {
@@ -61,6 +69,13 @@ export default function AdminSettingsPage() {
         
         if (data.header) setHeader(data.header);
         if (data.footer) setFooter(data.footer);
+
+        // Fetch security settings email address safely
+        const secRes = await fetch("/api/admin/security");
+        if (secRes.ok) {
+          const secData = await secRes.json();
+          if (secData.email) setSecurityEmail(secData.email);
+        }
       } catch (err: any) {
         console.error(err);
         setErrorMsg("Failed to retrieve settings from the database.");
@@ -89,6 +104,57 @@ export default function AdminSettingsPage() {
       setErrorMsg(err.message || "Failed to save configuration.");
       setSaveStatus("error");
       setTimeout(() => setSaveStatus("idle"), 4000);
+    }
+  };
+
+  const handleSaveSecurity = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!securityEmail) {
+      setSecurityErrorMsg("Email address is required.");
+      return;
+    }
+    if (!currentPassword) {
+      setSecurityErrorMsg("Current password is required to save changes.");
+      return;
+    }
+    if (newPassword && newPassword !== confirmPassword) {
+      setSecurityErrorMsg("New passwords do not match.");
+      return;
+    }
+
+    setSecurityStatus("saving");
+    setSecurityErrorMsg("");
+    setSecuritySuccessMsg("");
+
+    try {
+      const res = await fetch("/api/admin/security", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: securityEmail,
+          currentPassword,
+          newPassword: newPassword || undefined,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update security credentials.");
+
+      setSecurityStatus("success");
+      setSecuritySuccessMsg("Security settings updated successfully!");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      
+      setTimeout(() => {
+        setSecuritySuccessMsg("");
+        setSecurityStatus("idle");
+      }, 3000);
+    } catch (err: any) {
+      console.error(err);
+      setSecurityErrorMsg(err.message || "Failed to update security credentials.");
+      setSecurityStatus("error");
+      setTimeout(() => setSecurityStatus("idle"), 4000);
     }
   };
 
@@ -353,6 +419,85 @@ export default function AdminSettingsPage() {
           >
             <Save className="h-4 w-4" /> Save Footer Config
           </button>
+        </div>
+
+        {/* Admin Security Settings */}
+        <div className="glass-card p-6 flex flex-col gap-5 border border-white/10 h-fit lg:col-span-2">
+          <h3 className="text-base font-bold text-white flex items-center gap-2 pb-2 border-b border-white/5">
+            <Lock className="h-5 w-5 text-gold-accent" />
+            Admin Security Settings
+          </h3>
+
+          {securityErrorMsg && (
+            <div className="p-3 bg-red-600/10 border border-red-500/20 text-red-500 rounded-lg text-xs flex items-center gap-2 animate-shake">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              {securityErrorMsg}
+            </div>
+          )}
+
+          {securitySuccessMsg && (
+            <div className="p-3 bg-emerald-600/10 border border-emerald-500/20 text-emerald-500 rounded-lg text-xs flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 shrink-0" />
+              {securitySuccessMsg}
+            </div>
+          )}
+
+          <form onSubmit={handleSaveSecurity} className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] text-white/40 font-bold uppercase">Admin Email Address</label>
+                <input
+                  type="email"
+                  required
+                  value={securityEmail}
+                  onChange={(e) => setSecurityEmail(e.target.value)}
+                  className="px-3 py-2 rounded-md border border-white/10 bg-white/5 text-white text-xs outline-none focus:border-gold-accent/40"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] text-white/40 font-bold uppercase">Current Password (Required to Save)</label>
+                <input
+                  type="password"
+                  required
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="Enter current password"
+                  className="px-3 py-2 rounded-md border border-white/10 bg-white/5 text-white text-xs outline-none focus:border-gold-accent/40"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-white/5 pt-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] text-white/40 font-bold uppercase">New Password (Leave Blank to Keep Same)</label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password"
+                  className="px-3 py-2 rounded-md border border-white/10 bg-white/5 text-white text-xs outline-none focus:border-gold-accent/40"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] text-white/40 font-bold uppercase">Confirm New Password</label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm new password"
+                  className="px-3 py-2 rounded-md border border-white/10 bg-white/5 text-white text-xs outline-none focus:border-gold-accent/40"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={securityStatus === "saving"}
+              className="w-full mt-2 py-2.5 rounded-lg bg-gold-accent hover:bg-gold-hover text-black text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1.5"
+            >
+              <Save className="h-4 w-4" /> Save Security Credentials
+            </button>
+          </form>
         </div>
       </div>
     </div>
