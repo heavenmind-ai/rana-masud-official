@@ -31,6 +31,7 @@ export default function AdminFilmographyPageEditor() {
   const [assistantSectionTitle, setAssistantSectionTitle] = useState("");
   const [assistantSectionDescription, setAssistantSectionDescription] = useState("");
   const [imdbButtonText, setImdbButtonText] = useState("");
+  const [newSelectionInputs, setNewSelectionInputs] = useState<Record<number, string>>({});
 
   const [loading, setLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
@@ -315,7 +316,7 @@ export default function AdminFilmographyPageEditor() {
 
             <div className="flex flex-col gap-6 mt-4">
               {films.map((film, index) => {
-                const [newSelectionInput, setNewSelectionInput] = useState("");
+                const selectionInput = newSelectionInputs[index] || "";
                 return (
                   <div key={index} className="p-5 rounded-lg border border-white/5 bg-white/5 flex flex-col gap-4 relative">
                     <button
@@ -398,21 +399,21 @@ export default function AdminFilmographyPageEditor() {
                         <div className="flex gap-2">
                           <input
                             type="text"
-                            value={newSelectionInput}
+                            value={selectionInput}
                             placeholder="Add laurel (e.g. Best Director)..."
-                            onChange={(e) => setNewSelectionInput(e.target.value)}
+                            onChange={(e) => setNewSelectionInputs(prev => ({ ...prev, [index]: e.target.value }))}
                             className="flex-1 px-3 py-1 rounded bg-black/40 border border-white/10 text-white text-xs outline-none focus:border-gold-accent/40"
                             onKeyDown={(e) => {
                               if (e.key === "Enter") {
-                                handleAddSelection(index, newSelectionInput);
-                                setNewSelectionInput("");
+                                handleAddSelection(index, selectionInput);
+                                setNewSelectionInputs(prev => ({ ...prev, [index]: "" }));
                               }
                             }}
                           />
                           <button
                             onClick={() => {
-                              handleAddSelection(index, newSelectionInput);
-                              setNewSelectionInput("");
+                              handleAddSelection(index, selectionInput);
+                              setNewSelectionInputs(prev => ({ ...prev, [index]: "" }));
                             }}
                             className="px-3 bg-gold-accent text-black font-bold text-xs rounded hover:bg-gold-hover transition-colors cursor-pointer"
                           >
