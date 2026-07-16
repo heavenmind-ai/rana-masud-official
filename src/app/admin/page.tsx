@@ -4,7 +4,7 @@ import { getManifest } from "@/lib/content";
 import { FileText, Image as ImageIcon, Video, Layers, PenTool, Edit3 } from "lucide-react";
 
 export default async function AdminDashboardPage() {
-  const manifest = getManifest();
+  const manifest = await getManifest();
   const pagesCount = manifest.pages.length;
   
   // Total images based on manifest entries sum

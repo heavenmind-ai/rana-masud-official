@@ -4,7 +4,7 @@ import { getManifest } from "@/lib/content";
 import { Edit3, ExternalLink, Image as ImageIcon } from "lucide-react";
 
 export default async function AdminPagesListPage() {
-  const manifest = getManifest();
+  const manifest = await getManifest();
 
   return (
     <div className="flex flex-col gap-6 text-left">

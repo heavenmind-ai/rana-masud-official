@@ -1,8 +1,19 @@
 import React from "react";
+import { getPageBySlug } from "@/lib/content";
 import { Compass, Globe, MapPin } from "lucide-react";
 
-export default function FestivalsPage() {
-  const internationalFestivals = [
+export default async function FestivalsPage() {
+  const pageData = await getPageBySlug("film-festivals");
+
+  if (!pageData) {
+    return (
+      <div className="container mx-auto px-4 py-20 text-center">
+        <h1 className="text-2xl font-bold text-red-500">Error loading festivals.</h1>
+      </div>
+    );
+  }
+
+  const internationalFestivals = pageData.frontmatter.internationalFestivals || [
     { name: "South Asia International Film Festival", country: "Canada" },
     { name: "Al-Nahj International Film Festival", country: "Iraq" },
     { name: "Cefalù Film Festival", country: "Italy" },
@@ -12,7 +23,7 @@ export default function FestivalsPage() {
     { name: "Tripura Tourism Film Utshab", country: "India" },
   ];
 
-  const nationalFestivals = [
+  const nationalFestivals = pageData.frontmatter.nationalFestivals || [
     { name: "Chittagong SHORT Film Festival", city: "Chittagong" },
     { name: "Sylhet Film Festival", city: "Sylhet" },
     { name: "Our Shorts Their Shorts Film Festival", city: "Dhaka" },
@@ -31,7 +42,8 @@ export default function FestivalsPage() {
         <h1 className="text-4xl md:text-5xl font-bold mt-2 text-white">Film Festivals</h1>
         <div className="h-0.5 w-16 bg-gold-accent mx-auto mt-4" />
         <p className="text-white/60 mt-6 leading-relaxed">
-          Rana Masud&apos;s films have traveled globally and nationally, engaging diverse audiences and winning critical praise across multiple international venues.
+          {pageData.frontmatter.headerText ||
+            "Rana Masud's films have traveled globally and nationally, engaging diverse audiences and winning critical praise across multiple international venues."}
         </p>
       </section>
 
@@ -44,7 +56,7 @@ export default function FestivalsPage() {
             International Screenings
           </h2>
           <div className="flex flex-col gap-4">
-            {internationalFestivals.map((fest, idx) => (
+            {internationalFestivals.map((fest: any, idx: number) => (
               <div key={idx} className="glass-card p-5 flex items-center justify-between gap-4">
                 <div className="flex flex-col gap-1">
                   <h3 className="font-bold text-white text-base leading-snug">{fest.name}</h3>
@@ -68,7 +80,7 @@ export default function FestivalsPage() {
             National Screenings
           </h2>
           <div className="flex flex-col gap-4">
-            {nationalFestivals.map((fest, idx) => (
+            {nationalFestivals.map((fest: any, idx: number) => (
               <div key={idx} className="glass-card p-5 flex items-center justify-between gap-4">
                 <div className="flex flex-col gap-1">
                   <h3 className="font-bold text-white text-base leading-snug">{fest.name}</h3>

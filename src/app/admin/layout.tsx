@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { LayoutDashboard, FileText, ArrowLeft, Shield } from "lucide-react";
+import { LayoutDashboard, FileText, ArrowLeft, Shield, Settings } from "lucide-react";
 
 export default function AdminLayout({
   children,
@@ -33,6 +33,13 @@ export default function AdminLayout({
             >
               <FileText className="h-4 w-4 text-gold-accent" />
               Page Content
+            </Link>
+            <Link
+              href="/admin/settings"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:text-white hover:bg-white/5 transition-all"
+            >
+              <Settings className="h-4 w-4 text-gold-accent" />
+              Global Settings
             </Link>
           </nav>
         </div>

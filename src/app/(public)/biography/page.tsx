@@ -1,9 +1,10 @@
 import React from "react";
 import { getPageBySlug } from "@/lib/content";
 import { Briefcase, Award, GraduationCap, Users } from "lucide-react";
+import * as icons from "lucide-react";
 
 export default async function BiographyPage() {
-  const pageData = getPageBySlug("biography-rana_masud_film_director");
+  const pageData = await getPageBySlug("biography-rana_masud_film_director");
 
   if (!pageData) {
     return (
@@ -13,39 +14,43 @@ export default async function BiographyPage() {
     );
   }
 
-  // Parse sections manually or map them to visual layout blocks
-  const professionalTimeline = [
+  // Parse dynamic timeline from database frontmatter, falling back to original static list
+  const professionalTimeline = pageData.frontmatter.professionalTimeline || [
     {
       role: "Creative Director",
       period: "2002 - 2009",
       company: "Madonna Advertising Ltd. & Dhanshiri Communication Ltd.",
-      description: "Specialized in conceptualization, idea generation, and translation of brand messaging into creative campaign materials for major brand promotions and social causes.",
-      icon: Briefcase,
+      description:
+        "Specialized in conceptualization, idea generation, and translation of brand messaging into creative campaign materials for major brand promotions and social causes.",
+      icon: "Briefcase",
     },
     {
       role: "Managing Director",
       period: "2006 - Present",
       company: "Ferywala Communications",
-      description: "Founded and leads Ferywala Communications, a prominent film production company in Bangladesh, delivering narrative through compelling visual aesthetics and sophisticated cinematic language.",
-      icon: Briefcase,
+      description:
+        "Founded and leads Ferywala Communications, a prominent film production company in Bangladesh, delivering narrative through compelling visual aesthetics and sophisticated cinematic language.",
+      icon: "Briefcase",
     },
     {
       role: "Film Director & Screenplay Writer",
       period: "2002 - Present",
       company: "Independent & Agency Production",
-      description: "Directed almost 300 television commercials, documentaries, talk shows, and short films. Wrote multiple award-winning screens including 'The Residence (নিবাস)' and 'The Fragrance (আতর)'.",
-      icon: Briefcase,
+      description:
+        "Directed almost 300 television commercials, documentaries, talk shows, and short films. Wrote multiple award-winning screens including 'The Residence (নিবাস)' and 'The Fragrance (আতর)'.",
+      icon: "Briefcase",
     },
     {
       role: "Academic Film Teacher",
       period: "2002 - Present",
       company: "Bangladesh Film Institute (BFI)",
-      description: "Instructing student filmmakers in Film Production Design and Shot Division, providing foundational training to new generations of directors.",
-      icon: GraduationCap,
+      description:
+        "Instructing student filmmakers in Film Production Design and Shot Division, providing foundational training to new generations of directors.",
+      icon: "GraduationCap",
     },
   ];
 
-  const memberships = [
+  const memberships = pageData.frontmatter.memberships || [
     "Honorable Member of Bangladesh Short Film Forum",
     "Honorable Member of Bangladesh Film Institute Alumni Association",
     "Honorable Member of Film 4 Peace Foundation",
@@ -53,27 +58,34 @@ export default async function BiographyPage() {
     "Honorable Member of AD Club",
   ];
 
+  const juryText = pageData.frontmatter.juryText || "Served as an official jury member, selecting independent works that promote social harmony, conflict resolution, and global peace.";
+  const juryEvent = pageData.frontmatter.juryEvent || "Honorable Member of Jury Board - Peace Film Festival";
+  const juryLocationDate = pageData.frontmatter.juryLocationDate || "Dhaka, Bangladesh (October 2023)";
+  const juryFooter = pageData.frontmatter.juryFooter || "Bangladesh Film Institute Alumni Association member since 2012.";
+
+  // Profile image can be customized in frontmatter
+  const profileImage = pageData.frontmatter.profileImage || "/content/biography-rana_masud_film_director/assets/Rana-Masud-Profile-1.png";
+
   return (
     <div className="container mx-auto px-4 py-16 flex flex-col gap-16">
       {/* Intro Section */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         <div className="lg:col-span-4 flex justify-center">
           <div className="relative w-full max-w-[320px] aspect-[3/4] rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
-            <img
-              src="/content/biography-rana_masud_film_director/assets/Rana-Masud-Profile-1.png"
-              alt="Rana Masud Portrait"
-              className="w-full h-full object-cover"
-            />
+            <img src={profileImage} alt="Rana Masud Portrait" className="w-full h-full object-cover" />
           </div>
         </div>
-        <div className="lg:col-span-8 flex flex-col gap-6">
+        <div className="lg:col-span-8 flex flex-col gap-6 text-left">
           <div>
             <p className="text-xs font-bold text-gold-accent tracking-widest uppercase">The Filmmaker</p>
-            <h1 className="text-4xl md:text-5xl font-bold mt-2 text-white">Rana Masud Biography</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mt-2 text-white">
+              {pageData.frontmatter.introTitle || "Rana Masud Biography"}
+            </h1>
             <div className="h-0.5 w-16 bg-gold-accent mt-4" />
           </div>
           <p className="text-white/80 leading-relaxed text-base md:text-lg">
-            Born on September 21, 1979, Rana Masud is a renowned Bangladeshi film director, producer, screenplay writer, and academic. Over his illustrious career spanning more than two decades, he has established himself as a prominent voice in both commercial advertising and independent short films. Through his production house, <strong>Ferywala Communications</strong>, he has directed nearly 300 TV commercials, documentaries, and narrative projects.
+            {pageData.frontmatter.introText ||
+              `Born on September 21, 1979, Rana Masud is a renowned Bangladeshi film director, producer, screenplay writer, and academic. Over his illustrious career spanning more than two decades, he has established himself as a prominent voice in both commercial advertising and independent short films. Through his production house, Ferywala Communications, he has directed nearly 300 TV commercials, documentaries, and narrative projects.`}
           </p>
         </div>
       </section>
@@ -85,12 +97,12 @@ export default async function BiographyPage() {
           Professional Career
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {professionalTimeline.map((item, index) => {
-            const Icon = item.icon;
+          {professionalTimeline.map((item: any, index: number) => {
+            const IconComponent = (icons as any)[item.icon] || Briefcase;
             return (
               <div key={index} className="glass-card p-8 flex gap-6 text-left items-start">
                 <div className="w-12 h-12 rounded-lg bg-gold-accent/10 border border-gold-accent/20 flex items-center justify-center text-gold-accent shrink-0">
-                  <Icon className="h-6 w-6" />
+                  <IconComponent className="h-6 w-6" />
                 </div>
                 <div className="flex flex-col gap-2">
                   <span className="text-xs font-semibold text-gold-accent/80 tracking-wider">{item.period}</span>
@@ -105,7 +117,7 @@ export default async function BiographyPage() {
       </section>
 
       {/* Grid: Memberships & Jury Section */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-12">
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-12 text-left">
         {/* Memberships */}
         <div className="glass-card p-8 flex flex-col gap-6">
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
@@ -113,7 +125,7 @@ export default async function BiographyPage() {
             Affiliations & Memberships
           </h2>
           <ul className="flex flex-col gap-3">
-            {memberships.map((item, index) => (
+            {memberships.map((item: string, index: number) => (
               <li key={index} className="flex items-center gap-3 text-sm text-white/70">
                 <div className="w-1.5 h-1.5 rounded-full bg-gold-accent shrink-0" />
                 {item}
@@ -130,15 +142,13 @@ export default async function BiographyPage() {
               Jury Service
             </h2>
             <div className="flex flex-col gap-2 text-left">
-              <h4 className="font-bold text-white text-sm">Honorable Member of Jury Board - Peace Film Festival</h4>
-              <p className="text-xs text-white/40">Dhaka, Bangladesh (October 2023)</p>
-              <p className="text-sm text-white/70 mt-2">
-                Served as an official jury member, selecting independent works that promote social harmony, conflict resolution, and global peace.
-              </p>
+              <h4 className="font-bold text-white text-sm">{juryEvent}</h4>
+              <p className="text-xs text-white/40">{juryLocationDate}</p>
+              <p className="text-sm text-white/70 mt-2">{juryText}</p>
             </div>
           </div>
           <div className="text-xs text-gold-accent/80 border-t border-white/5 pt-4">
-            Bangladesh Film Institute Alumni Association member since 2012.
+            {juryFooter}
           </div>
         </div>
       </section>

@@ -1,8 +1,19 @@
 import React from "react";
+import { getPageBySlug } from "@/lib/content";
 import { Award } from "lucide-react";
 
-export default function AwardsPage() {
-  const awards = [
+export default async function AwardsPage() {
+  const pageData = await getPageBySlug("film-awards");
+
+  if (!pageData) {
+    return (
+      <div className="container mx-auto px-4 py-20 text-center">
+        <h1 className="text-2xl font-bold text-red-500">Error loading awards.</h1>
+      </div>
+    );
+  }
+
+  const awards = pageData.frontmatter.awards || [
     {
       title: "Best Director & Screenplay Award",
       film: "The Fragrance (আতর)",
@@ -53,14 +64,18 @@ export default function AwardsPage() {
         <h1 className="text-4xl md:text-5xl font-bold mt-2 text-white">Film Awards</h1>
         <div className="h-0.5 w-16 bg-gold-accent mx-auto mt-4" />
         <p className="text-white/60 mt-6 leading-relaxed">
-          Celebrating cinematic accomplishments on both the national and international film festival stages, honoring storytelling and directingexcellence.
+          {pageData.frontmatter.headerText ||
+            "Celebrating cinematic accomplishments on both the national and international film festival stages, honoring storytelling and directing excellence."}
         </p>
       </section>
 
       {/* Trophies Grid */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {awards.map((award, idx) => (
-          <div key={idx} className="glass-card p-8 flex flex-col gap-6 justify-between text-left relative overflow-hidden group border border-white/5">
+        {awards.map((award: any, idx: number) => (
+          <div
+            key={idx}
+            className="glass-card p-8 flex flex-col gap-6 justify-between text-left relative overflow-hidden group border border-white/5"
+          >
             {/* Wreath Watermark */}
             <div className="absolute -right-8 -bottom-8 opacity-5 text-gold-accent group-hover:scale-110 transition-transform duration-500 pointer-events-none">
               <Award className="w-36 h-36" />
@@ -72,7 +87,9 @@ export default function AwardsPage() {
               </div>
               <div className="flex flex-col gap-1">
                 <span className="text-xs font-bold text-gold-accent tracking-wider">{award.event}</span>
-                <span className="text-xs text-white/40">{award.location} ({award.year})</span>
+                <span className="text-xs text-white/40">
+                  {award.location} ({award.year})
+                </span>
                 <h3 className="text-xl font-bold text-white mt-2 leading-snug">{award.title}</h3>
                 <p className="text-xs text-gold-accent mt-0.5 italic font-medium">Film: {award.film}</p>
               </div>
