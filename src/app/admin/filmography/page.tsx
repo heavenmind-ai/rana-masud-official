@@ -11,6 +11,7 @@ interface ShowcaseFilm {
   description: string;
   image: string;
   selections: string[];
+  link?: string;
 }
 
 interface AssistantRole {
@@ -152,7 +153,7 @@ export default function AdminFilmographyPageEditor() {
   const handleAddFilm = () => {
     setFilms((prev) => [
       ...prev,
-      { title: "New Film Title", type: "Short Film", role: "Director", description: "", image: "", selections: [] },
+      { title: "New Film Title", type: "Short Film", role: "Director", description: "", image: "", selections: [], link: "" },
     ]);
   };
 
@@ -339,7 +340,7 @@ export default function AdminFilmographyPageEditor() {
                       <Trash2 className="h-4 w-4" />
                     </button>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                       <div className="flex flex-col gap-1.5">
                         <label className="text-[9px] text-white/40 font-bold uppercase">Film Title</label>
                         <input
@@ -367,6 +368,16 @@ export default function AdminFilmographyPageEditor() {
                           onChange={(e) => handleFilmChange(index, "role", e.target.value)}
                           className="px-2.5 py-1.5 rounded bg-black/40 border border-white/10 text-white text-xs outline-none focus:border-gold-accent/40"
                           placeholder="e.g. Director & Writer"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-[9px] text-white/40 font-bold uppercase">Poster Action Link (optional)</label>
+                        <input
+                          type="text"
+                          value={film.link || ""}
+                          onChange={(e) => handleFilmChange(index, "link", e.target.value)}
+                          className="px-2.5 py-1.5 rounded bg-black/40 border border-white/10 text-white text-xs outline-none focus:border-gold-accent/40"
+                          placeholder="e.g. https://imdb.com/title/..."
                         />
                       </div>
                     </div>
