@@ -49,7 +49,7 @@ export default function AdminSettingsPage() {
   const [uploadingSocialIndex, setUploadingSocialIndex] = useState<number | null>(null);
 
   const [footer, setFooter] = useState<FooterData>({
-    copyrightText: `© ${new Date().getFullYear()} Rana Masud. All Rights Reserved. Powered by Next.js.`,
+    copyrightText: `© ${new Date().getFullYear()} Rana Masud. All Rights Reserved. Created by Shahadot.`,
     brandName: "RANA MASUD",
     brandSubtitle: "Film Director • Producer • Teacher",
     contactEmail: "info@ranamasudbd.com",

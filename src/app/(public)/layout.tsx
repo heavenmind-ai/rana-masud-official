@@ -24,7 +24,7 @@ const defaultHeader = {
 };
 
 const defaultFooter = {
-  copyrightText: `© ${new Date().getFullYear()} Rana Masud. All Rights Reserved. Powered by Next.js.`,
+  copyrightText: `© ${new Date().getFullYear()} Rana Masud. All Rights Reserved. Created by Shahadot.`,
   brandName: "RANA MASUD",
   brandSubtitle: "Film Director • Producer • Teacher",
   socials: [
