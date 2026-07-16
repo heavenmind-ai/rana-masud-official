@@ -19,6 +19,7 @@ const defaultHeader = {
     { label: "Gallery", href: "/gallery" },
     { label: "Press", href: "/press" },
     { label: "TV Shows", href: "/tv-shows" },
+    { label: "Blog", href: "/blog" },
     { label: "Contact", href: "/contact" },
   ],
 };
