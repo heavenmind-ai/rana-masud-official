@@ -16,6 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
 import HeroBackgroundSlider from "@/components/HeroBackgroundSlider";
 import ClientsMarquee from "@/components/ClientsMarquee";
 import LaurelsMarquee from "@/components/LaurelsMarquee";
+import ImagePreloader from "@/components/ImagePreloader";
 
 export default async function HomePage() {
   const pageData = await getPageBySlug("home");
@@ -105,6 +106,14 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col gap-16 pb-20">
+      {/* Preload critical hero images */}
+      <ImagePreloader
+        images={[
+          pageData.frontmatter.heroProfileImage || "/content/home/assets/rana-masud-Profile.png",
+          ...(pageData.frontmatter.heroSliderImages || []),
+        ]}
+      />
+
       {/* Cinematic Hero Section */}
       <section className="relative min-h-[85vh] flex items-center justify-center py-20 overflow-hidden border-b border-white/5 bg-gradient-to-b from-[#0c0c0e] via-[#09090b] to-[#09090b]">
         {/* Background Image Slider */}

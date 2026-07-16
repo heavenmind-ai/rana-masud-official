@@ -4,8 +4,6 @@ import { r2Client, R2_BUCKET_NAME, R2_PUBLIC_URL, isR2Configured } from "@/lib/r
 import { cookies } from "next/headers";
 import { verifySession } from "@/lib/auth";
 import crypto from "crypto";
-import { connectToDatabase } from "@/lib/mongodb";
-import { GridFSBucket } from "mongodb";
 
 export async function POST(req: NextRequest) {
   try {
@@ -23,6 +21,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
+    if (!isR2Configured) {
+      return NextResponse.json(
+        { error: "Cloudflare R2 storage is not configured. Upload failed." },
+        { status: 500 }
+      );
+    }
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
@@ -32,49 +37,20 @@ export async function POST(req: NextRequest) {
     const filename = `${hash}.${ext}`;
     const contentType = file.type || "image/png";
 
-    // 1. If Cloudflare R2 is configured, upload to R2
-    if (isR2Configured) {
-      await r2Client.send(
-        new PutObjectCommand({
-          Bucket: R2_BUCKET_NAME,
-          Key: `uploads/${filename}`,
-          Body: buffer,
-          ContentType: contentType,
-        })
-      );
+    await r2Client.send(
+      new PutObjectCommand({
+        Bucket: R2_BUCKET_NAME,
+        Key: `uploads/${filename}`,
+        Body: buffer,
+        ContentType: contentType,
+      })
+    );
 
-      const cleanBaseUrl = R2_PUBLIC_URL.endsWith("/")
-        ? R2_PUBLIC_URL
-        : `${R2_PUBLIC_URL}/`;
-      const publicUrl = `${cleanBaseUrl}uploads/${filename}`;
+    const cleanBaseUrl = R2_PUBLIC_URL.endsWith("/")
+      ? R2_PUBLIC_URL
+      : `${R2_PUBLIC_URL}/`;
+    const publicUrl = `${cleanBaseUrl}uploads/${filename}`;
 
-      return NextResponse.json({ url: publicUrl, filename });
-    }
-
-    // 2. Otherwise, save the file to MongoDB GridFS (safe for serverless/Vercel)
-    const conn = await connectToDatabase();
-    const db = conn.connection.db;
-    if (!db) {
-      throw new Error("Failed to retrieve native MongoDB database reference");
-    }
-    const bucket = new GridFSBucket(db, { bucketName: "media" });
-
-    // Check if the file already exists in GridFS to avoid duplicating uploads
-    const existingFiles = await bucket.find({ filename }).toArray();
-    if (existingFiles.length === 0) {
-      await new Promise<void>((resolve, reject) => {
-        const uploadStream = bucket.openUploadStream(filename, {
-          metadata: { contentType },
-        });
-        uploadStream.write(buffer);
-        uploadStream.end();
-        uploadStream.on("finish", () => resolve());
-        uploadStream.on("error", (err) => reject(err));
-      });
-    }
-
-    // Return the dynamic route URL pointing to our GridFS serving endpoint
-    const publicUrl = `/api/upload/${filename}`;
     return NextResponse.json({ url: publicUrl, filename });
   } catch (error: any) {
     console.error("Upload error details:", error);

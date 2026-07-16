@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/mongodb";
-import { GridFSBucket } from "mongodb";
+import { R2_PUBLIC_URL } from "@/lib/r2";
 
 export const dynamic = "force-dynamic";
 
@@ -10,40 +9,19 @@ export async function GET(
 ) {
   try {
     const { filename } = await props.params;
-    const conn = await connectToDatabase();
-    const db = conn.connection.db;
-    if (!db) {
-      return NextResponse.json({ error: "Database not connected" }, { status: 500 });
+
+    if (!R2_PUBLIC_URL) {
+      return new NextResponse("R2 storage public URL is not configured.", { status: 500 });
     }
 
-    const bucket = new GridFSBucket(db, { bucketName: "media" });
+    const cleanBaseUrl = R2_PUBLIC_URL.endsWith("/")
+      ? R2_PUBLIC_URL
+      : `${R2_PUBLIC_URL}/`;
 
-    // Check if file exists
-    const files = await bucket.find({ filename }).toArray();
-    if (!files || files.length === 0) {
-      return new NextResponse("File not found", { status: 404 });
-    }
-
-    const file = files[0];
-
-    // Download stream from GridFS
-    const downloadStream = bucket.openDownloadStreamByName(filename);
-    const chunks: Buffer[] = [];
-    for await (const chunk of downloadStream) {
-      chunks.push(Buffer.from(chunk));
-    }
-    const fileBuffer = Buffer.concat(chunks);
-
-    const contentType = (file as any).contentType || (file as any).metadata?.contentType || "image/png";
-
-    return new NextResponse(fileBuffer, {
-      headers: {
-        "Content-Type": contentType,
-        "Cache-Control": "public, max-age=31536000, immutable",
-      },
-    });
+    const redirectUrl = `${cleanBaseUrl}uploads/${filename}`;
+    return NextResponse.redirect(redirectUrl, 307);
   } catch (error: any) {
-    console.error("Serving uploaded file error:", error);
+    console.error("Serving uploaded file redirect error:", error);
     return new NextResponse("Error loading asset", { status: 500 });
   }
 }
