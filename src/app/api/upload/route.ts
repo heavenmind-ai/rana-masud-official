@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { r2Client, R2_BUCKET_NAME, R2_PUBLIC_URL, isR2Configured } from "@/lib/r2";
+import { cookies } from "next/headers";
+import { verifySession } from "@/lib/auth";
 import crypto from "crypto";
 
 export async function POST(req: NextRequest) {
   try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("admin_session")?.value;
+    const isAuthenticated = await verifySession(token);
+    if (!isAuthenticated) {
+      return NextResponse.json({ error: "Unauthorized access." }, { status: 401 });
+    }
+
     if (!isR2Configured) {
       return NextResponse.json(
         { error: "Cloudflare R2 is not fully configured in your environment." },

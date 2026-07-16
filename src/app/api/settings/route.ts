@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(setting ? (setting as any).data : {});
     }
 
-    const allSettings = await GlobalSettings.find().lean();
+    const allSettings = await GlobalSettings.find({ key: { $ne: "admin_credentials" } }).lean();
     const settingsMap = allSettings.reduce((acc: any, curr: any) => {
       acc[curr.key] = curr.data;
       return acc;
@@ -39,6 +39,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: "Missing key or data parameters" },
         { status: 400 }
+      );
+    }
+
+    if (key === "admin_credentials") {
+      return NextResponse.json(
+        { error: "Access Denied: Direct credentials modification prohibited." },
+        { status: 403 }
       );
     }
 

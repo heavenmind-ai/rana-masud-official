@@ -92,14 +92,6 @@ export default async function PublicLayout({
             ))}
           </nav>
 
-          {/* Admin Control Link */}
-          <Link
-            href="/admin"
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-gold-accent/20 bg-gold-accent/10 hover:bg-gold-accent/20 hover:border-gold-accent/40 text-xs font-semibold text-gold-accent transition-all cursor-pointer animate-pulse-slow"
-          >
-            <Settings className="h-3.5 w-3.5" />
-            Admin Panel
-          </Link>
         </div>
       </header>
 
@@ -164,10 +156,6 @@ export default async function PublicLayout({
                 <LinkIcon className="h-4 w-4" />
               </a>
             )}
-            <span className="text-white/10">|</span>
-            <Link href="/admin" className="text-white/40 hover:text-gold-accent transition-colors">
-              Admin Area
-            </Link>
           </div>
         </div>
       </footer>

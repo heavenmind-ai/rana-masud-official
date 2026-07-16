@@ -1,5 +1,8 @@
 import React from "react";
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { verifySession } from "@/lib/auth";
+import AdminLoginForm from "@/components/AdminLoginForm";
 import {
   LayoutDashboard,
   ArrowLeft,
@@ -16,13 +19,26 @@ import {
   Tv,
   Sparkles,
   Mail,
+  LogOut,
 } from "lucide-react";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("admin_session")?.value;
+  const isAuthenticated = await verifySession(token);
+
+  if (!isAuthenticated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#09090b] text-[#f4f4f5] p-6">
+        <AdminLoginForm />
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen bg-[#09090b] text-[#f4f4f5]">
       {/* Sidebar navigation */}
@@ -139,6 +155,13 @@ export default function AdminLayout({
             <ArrowLeft className="h-3.5 w-3.5" />
             Back to Site
           </Link>
+          <a
+            href="/api/admin/logout"
+            className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-red-500/60 hover:text-red-500 hover:bg-red-500/5 rounded-lg transition-colors cursor-pointer"
+          >
+            <LogOut className="h-3.5 w-3.5" />
+            Log Out
+          </a>
           <div className="text-[10px] text-white/20 px-4 pt-2 border-t border-white/5">
             Rana Masud CMS v1.0
           </div>

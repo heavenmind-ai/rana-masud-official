@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import { Page } from "@/models/Page";
+import { cookies } from "next/headers";
+import { verifySession } from "@/lib/auth";
 
 export async function GET() {
   try {
@@ -15,6 +17,12 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("admin_session")?.value;
+    const isAuthenticated = await verifySession(token);
+    if (!isAuthenticated) {
+      return NextResponse.json({ error: "Unauthorized access." }, { status: 401 });
+    }
     await connectToDatabase();
     const body = await req.json();
     const { title, slug, content, description, image, summary } = body;

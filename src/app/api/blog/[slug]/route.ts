@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import { Page } from "@/models/Page";
+import { cookies } from "next/headers";
+import { verifySession } from "@/lib/auth";
 
 export async function GET(
   req: NextRequest,
@@ -31,6 +33,12 @@ export async function POST(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("admin_session")?.value;
+    const isAuthenticated = await verifySession(token);
+    if (!isAuthenticated) {
+      return NextResponse.json({ error: "Unauthorized access." }, { status: 401 });
+    }
     await connectToDatabase();
     const { slug: rawSlug } = await params;
     const slug = decodeURIComponent(rawSlug);
@@ -71,6 +79,12 @@ export async function DELETE(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("admin_session")?.value;
+    const isAuthenticated = await verifySession(token);
+    if (!isAuthenticated) {
+      return NextResponse.json({ error: "Unauthorized access." }, { status: 401 });
+    }
     await connectToDatabase();
     const { slug: rawSlug } = await params;
     const slug = decodeURIComponent(rawSlug);
