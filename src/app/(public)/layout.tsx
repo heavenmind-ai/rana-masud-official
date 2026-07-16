@@ -78,22 +78,6 @@ export default async function PublicLayout({
 }) {
   const { header, footer } = await getHeaderFooterSettings();
 
-  // Split links into main bar and dropdown
-  const mainLinks = header.menuLinks.filter((link: any) =>
-    ["home", "biography", "gallery", "contact"].includes(link.label.toLowerCase()) ||
-    ["/", "/biography", "/gallery", "/contact"].includes(link.href)
-  );
-
-  const dropdownLinks = header.menuLinks.filter((link: any) =>
-    !["home", "biography", "gallery", "contact"].includes(link.label.toLowerCase()) &&
-    !["/", "/biography", "/gallery", "/contact"].includes(link.href)
-  );
-
-  const homeLink = mainLinks.find((l: any) => l.href === "/" || l.label.toLowerCase() === "home");
-  const bioLink = mainLinks.find((l: any) => l.href === "/biography" || l.label.toLowerCase() === "biography");
-  const galleryLink = mainLinks.find((l: any) => l.href === "/gallery" || l.label.toLowerCase() === "gallery");
-  const contactLink = mainLinks.find((l: any) => l.href === "/contact" || l.label.toLowerCase() === "contact");
-
   return (
     <div className="flex flex-col min-h-screen bg-[#09090b] text-[#f4f4f5]">
       <Suspense fallback={null}>
@@ -115,53 +99,18 @@ export default async function PublicLayout({
             )}
           </Link>
 
-          {/* Dynamic Nav Links with Works Dropdown */}
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-            {homeLink && (
-              <Link href={homeLink.href} className="hover:text-gold-accent transition-colors">
-                {homeLink.label}
+          {/* Dynamic Flat Nav Links, Bold, with Tighter Spacing */}
+          <nav className="hidden md:flex items-center gap-4 text-[13px] font-bold">
+            {header.menuLinks.map((link: any, idx: number) => (
+              <Link
+                key={idx}
+                href={link.href}
+                className="hover:text-gold-accent transition-colors"
+              >
+                {link.label}
               </Link>
-            )}
-            
-            {bioLink && (
-              <Link href={bioLink.href} className="hover:text-gold-accent transition-colors">
-                {bioLink.label}
-              </Link>
-            )}
-
-            {dropdownLinks.length > 0 && (
-              <div className="relative group py-2">
-                <button className="flex items-center gap-1 hover:text-gold-accent transition-colors cursor-pointer">
-                  Works
-                  <ChevronDown className="h-3.5 w-3.5 opacity-60" />
-                </button>
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-44 rounded-xl border border-white/10 bg-[#0c0c0e]/95 backdrop-blur-md p-1.5 shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 flex flex-col gap-0.5 z-50">
-                  {dropdownLinks.map((link: any, idx: number) => (
-                    <Link
-                      key={idx}
-                      href={link.href}
-                      className="px-3 py-2 rounded-lg hover:bg-white/5 hover:text-gold-accent transition-colors text-xs text-left"
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {galleryLink && (
-              <Link href={galleryLink.href} className="hover:text-gold-accent transition-colors">
-                {galleryLink.label}
-              </Link>
-            )}
-
-            {contactLink && (
-              <Link href={contactLink.href} className="hover:text-gold-accent transition-colors">
-                {contactLink.label}
-              </Link>
-            )}
+            ))}
           </nav>
-
         </div>
       </header>
 
