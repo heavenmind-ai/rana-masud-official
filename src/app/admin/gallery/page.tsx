@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Save, Image as ImageIcon, Trash2, Plus, CheckCircle2, AlertCircle } from "lucide-react";
+import SEOControl from "@/components/SEOControl";
 
 interface GalleryItem {
   src: string;
@@ -18,6 +19,10 @@ export default function AdminGalleryManager() {
   // New section header states
   const [galleryBadgeText, setGalleryBadgeText] = useState("");
   const [galleryTitle, setGalleryTitle] = useState("");
+  const [seoTitle, setSeoTitle] = useState("");
+  const [seoDescription, setSeoDescription] = useState("");
+  const [seoKeywords, setSeoKeywords] = useState("");
+  const [seoOgImage, setSeoOgImage] = useState("");
 
   // New Image Form state
   const [newImgSrc, setNewImgSrc] = useState("");
@@ -37,6 +42,10 @@ export default function AdminGalleryManager() {
         setGalleryItems(fm.galleryItems || []);
         setGalleryBadgeText(fm.galleryBadgeText || "Visuals");
         setGalleryTitle(fm.galleryTitle || "Photo Gallery");
+        setSeoTitle(fm.seoTitle || "");
+        setSeoDescription(fm.seoDescription || "");
+        setSeoKeywords(fm.seoKeywords || "");
+        setSeoOgImage(fm.seoOgImage || "");
       } catch (error) {
         console.error(error);
       } finally {
@@ -109,6 +118,10 @@ export default function AdminGalleryManager() {
         galleryItems: itemsToSave,
         galleryBadgeText,
         galleryTitle,
+        seoTitle,
+        seoDescription,
+        seoKeywords,
+        seoOgImage,
       };
 
       const res = await fetch("/api/pages/gallery", {
@@ -189,7 +202,9 @@ export default function AdminGalleryManager() {
       </div>
 
       {/* Header text settings */}
-      <div className="glass-card p-6 border border-white/10 flex flex-col gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-4">
+        <div className="lg:col-span-8 flex flex-col gap-6">
+          <div className="glass-card p-6 border border-white/10 flex flex-col gap-4">
         <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest pb-1 border-b border-white/5">Page Header Configuration</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -329,5 +344,21 @@ export default function AdminGalleryManager() {
         </div>
       </div>
     </div>
+
+    {/* Right column - SEO configuration */}
+    <div className="lg:col-span-4 flex flex-col gap-6">
+      <SEOControl
+        seoTitle={seoTitle}
+        setSeoTitle={setSeoTitle}
+        seoDescription={seoDescription}
+        setSeoDescription={setSeoDescription}
+        seoKeywords={seoKeywords}
+        setSeoKeywords={setSeoKeywords}
+        seoOgImage={seoOgImage}
+        setSeoOgImage={setSeoOgImage}
+      />
+    </div>
+  </div>
+</div>
   );
 }

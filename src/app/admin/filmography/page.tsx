@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Save, Plus, Trash2, Image as ImageIcon, CheckCircle2, AlertCircle } from "lucide-react";
+import SEOControl from "@/components/SEOControl";
 
 interface ShowcaseFilm {
   title: string;
@@ -32,6 +33,10 @@ export default function AdminFilmographyPageEditor() {
   const [assistantSectionDescription, setAssistantSectionDescription] = useState("");
   const [imdbButtonText, setImdbButtonText] = useState("");
   const [newSelectionInputs, setNewSelectionInputs] = useState<Record<number, string>>({});
+  const [seoTitle, setSeoTitle] = useState("");
+  const [seoDescription, setSeoDescription] = useState("");
+  const [seoKeywords, setSeoKeywords] = useState("");
+  const [seoOgImage, setSeoOgImage] = useState("");
 
   const [loading, setLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
@@ -59,6 +64,10 @@ export default function AdminFilmographyPageEditor() {
             "Rana Masud honed his practical directing capabilities and shot composition skills under the direct mentorship of Tanvir Mokammel:"
         );
         setImdbButtonText(fm.imdbButtonText || "IMDb Profile");
+        setSeoTitle(fm.seoTitle || "");
+        setSeoDescription(fm.seoDescription || "");
+        setSeoKeywords(fm.seoKeywords || "");
+        setSeoOgImage(fm.seoOgImage || "");
       } catch (error) {
         console.error(error);
       } finally {
@@ -113,6 +122,10 @@ export default function AdminFilmographyPageEditor() {
         assistantSectionTitle,
         assistantSectionDescription,
         imdbButtonText,
+        seoTitle,
+        seoDescription,
+        seoKeywords,
+        seoOgImage,
       };
 
       const res = await fetch("/api/pages/rana_masud_filmography", {
@@ -549,6 +562,17 @@ export default function AdminFilmographyPageEditor() {
               ))}
             </div>
           </div>
+
+          <SEOControl
+            seoTitle={seoTitle}
+            setSeoTitle={setSeoTitle}
+            seoDescription={seoDescription}
+            setSeoDescription={setSeoDescription}
+            seoKeywords={seoKeywords}
+            setSeoKeywords={setSeoKeywords}
+            seoOgImage={seoOgImage}
+            setSeoOgImage={setSeoOgImage}
+          />
         </div>
       </div>
     </div>

@@ -1,8 +1,17 @@
 export const dynamic = "force-dynamic";
 
 import React from "react";
-import { getPageBySlug } from "@/lib/content";
+import { getPageBySlug, generatePageMetadata } from "@/lib/content";
 import GalleryClient from "./GalleryClient";
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return generatePageMetadata(
+    "gallery",
+    "Photo Gallery | Rana Masud",
+    "View moments, behind-the-scenes captures, awards ceremonies, and photoshoot gallery of director Rana Masud."
+  );
+}
 
 export default async function GalleryPage() {
   const pageData = await getPageBySlug("gallery");

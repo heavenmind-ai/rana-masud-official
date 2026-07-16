@@ -113,3 +113,53 @@ export async function savePageData(
 export async function getPageAssets(slug: string): Promise<string[]> {
   return [];
 }
+
+import type { Metadata } from "next";
+
+export async function generatePageMetadata(
+  slug: string,
+  defaultTitle: string,
+  defaultDesc: string
+): Promise<Metadata> {
+  const page = await getPageBySlug(slug);
+  if (!page || !page.frontmatter) {
+    return {
+      title: defaultTitle,
+      description: defaultDesc,
+    };
+  }
+
+  const fm = page.frontmatter;
+  const title = fm.seoTitle || fm.title || defaultTitle;
+  const description = fm.seoDescription || fm.description || defaultDesc;
+  const keywords = fm.seoKeywords
+    ? fm.seoKeywords.split(",").map((k: string) => k.trim()).filter(Boolean)
+    : undefined;
+
+  const metadata: Metadata = {
+    title,
+    description,
+    keywords,
+  };
+
+  if (fm.seoOgImage) {
+    metadata.openGraph = {
+      title,
+      description,
+      images: [
+        {
+          url: fm.seoOgImage,
+          alt: title,
+        },
+      ],
+    };
+    metadata.twitter = {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [fm.seoOgImage],
+    };
+  }
+
+  return metadata;
+}

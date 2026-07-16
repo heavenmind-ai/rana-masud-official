@@ -2,9 +2,23 @@ export const dynamic = "force-dynamic";
 
 import React from "react";
 import Link from "next/link";
-import { getPageBySlug } from "@/lib/content";
+import { getPageBySlug, generatePageMetadata } from "@/lib/content";
 import ReactMarkdown from "react-markdown";
 import { Calendar, ArrowLeft } from "lucide-react";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const resolvedParams = await params;
+  const slug = decodeURIComponent(resolvedParams.slug);
+  const post = await getPageBySlug(slug);
+  const defaultTitle = post?.title || "Blog Post | Rana Masud";
+  const defaultDesc = post?.frontmatter?.summary || "Read this article published by director Rana Masud.";
+  return generatePageMetadata(slug, defaultTitle, defaultDesc);
+}
 
 export default async function BlogPostPage({
   params,

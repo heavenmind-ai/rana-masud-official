@@ -1,10 +1,19 @@
 export const dynamic = "force-dynamic";
 
 import React from "react";
-import { getPageBySlug } from "@/lib/content";
+import { getPageBySlug, generatePageMetadata } from "@/lib/content";
 import { connectToDatabase } from "@/lib/mongodb";
 import { GlobalSettings } from "@/models/GlobalSettings";
 import ContactClient from "./ContactClient";
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return generatePageMetadata(
+    "contact",
+    "Contact & Inquiries | Rana Masud",
+    "Get in touch with film director Rana Masud for business inquiries, film projects, training, or collaboration."
+  );
+}
 
 export default async function ContactPage() {
   const pageData = await getPageBySlug("contact");

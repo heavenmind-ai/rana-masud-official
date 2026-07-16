@@ -1,8 +1,17 @@
 export const dynamic = "force-dynamic";
 
 import React from "react";
-import { getPageBySlug } from "@/lib/content";
+import { getPageBySlug, generatePageMetadata } from "@/lib/content";
 import { Film, Award, Link as LinkIcon, Star, CheckCircle } from "lucide-react";
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return generatePageMetadata(
+    "rana_masud_filmography",
+    "Filmography & Works | Rana Masud",
+    "Explore the cinematic works, feature films, short films, and documentaries directed by Rana Masud."
+  );
+}
 
 export default async function FilmographyPage() {
   const pageData = await getPageBySlug("rana_masud_filmography");

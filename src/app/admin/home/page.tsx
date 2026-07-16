@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Save, Plus, Trash2, Image as ImageIcon, CheckCircle2, AlertCircle } from "lucide-react";
+import SEOControl from "@/components/SEOControl";
 
 interface NotableFilm {
   title: string;
@@ -29,6 +30,10 @@ export default function AdminHomePageEditor() {
   const [loading, setLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
   const [uploadingField, setUploadingField] = useState<string | null>(null);
+  const [seoTitle, setSeoTitle] = useState("");
+  const [seoDescription, setSeoDescription] = useState("");
+  const [seoKeywords, setSeoKeywords] = useState("");
+  const [seoOgImage, setSeoOgImage] = useState("");
 
   useEffect(() => {
     async function fetchHomeData() {
@@ -41,6 +46,12 @@ export default function AdminHomePageEditor() {
         setDescription(data.description || "");
         setFrontmatter(data.frontmatter || { notableFilms: [], services: [] });
         setContent(data.content || "");
+        
+        const fm = data.frontmatter || {};
+        setSeoTitle(fm.seoTitle || "");
+        setSeoDescription(fm.seoDescription || "");
+        setSeoKeywords(fm.seoKeywords || "");
+        setSeoOgImage(fm.seoOgImage || "");
       } catch (error) {
         console.error(error);
       } finally {
@@ -144,6 +155,10 @@ export default function AdminHomePageEditor() {
         ...frontmatter,
         title,
         description,
+        seoTitle,
+        seoDescription,
+        seoKeywords,
+        seoOgImage,
       };
 
       const res = await fetch("/api/pages/home", {
@@ -684,6 +699,17 @@ export default function AdminHomePageEditor() {
               )}
             </div>
           </div>
+
+          <SEOControl
+            seoTitle={seoTitle}
+            setSeoTitle={setSeoTitle}
+            seoDescription={seoDescription}
+            setSeoDescription={setSeoDescription}
+            seoKeywords={seoKeywords}
+            setSeoKeywords={setSeoKeywords}
+            seoOgImage={seoOgImage}
+            setSeoOgImage={setSeoOgImage}
+          />
         </div>
       </div>
     </div>

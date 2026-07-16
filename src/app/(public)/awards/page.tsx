@@ -1,8 +1,17 @@
 export const dynamic = "force-dynamic";
 
 import React from "react";
-import { getPageBySlug } from "@/lib/content";
+import { getPageBySlug, generatePageMetadata } from "@/lib/content";
 import { Award } from "lucide-react";
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return generatePageMetadata(
+    "film-awards",
+    "Awards & Recognitions | Rana Masud",
+    "Discover the film awards, recognitions, and international laurels received by director Rana Masud."
+  );
+}
 
 export default async function AwardsPage() {
   const pageData = await getPageBySlug("film-awards");

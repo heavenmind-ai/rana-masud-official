@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import SEOControl from "@/components/SEOControl";
 import {
   Save,
   CheckCircle2,
@@ -53,6 +54,10 @@ export default function AdminContactPageEditor() {
   const [inboxLoading, setInboxLoading] = useState(false);
   const [configLoading, setConfigLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
+  const [seoTitle, setSeoTitle] = useState("");
+  const [seoDescription, setSeoDescription] = useState("");
+  const [seoKeywords, setSeoKeywords] = useState("");
+  const [seoOgImage, setSeoOgImage] = useState("");
 
   // Fetch page configs
   useEffect(() => {
@@ -80,6 +85,10 @@ export default function AdminContactPageEditor() {
         setFormSuccessTitle(fm.formSuccessTitle || "Message Sent Successfully!");
         setFormSuccessText(fm.formSuccessText || "Thank you. I will get back to you shortly.");
         setNotificationEmail(fm.notificationEmail || "");
+        setSeoTitle(fm.seoTitle || "");
+        setSeoDescription(fm.seoDescription || "");
+        setSeoKeywords(fm.seoKeywords || "");
+        setSeoOgImage(fm.seoOgImage || "");
       } catch (error) {
         console.error(error);
       } finally {
@@ -136,6 +145,10 @@ export default function AdminContactPageEditor() {
         formSuccessTitle,
         formSuccessText,
         notificationEmail,
+        seoTitle,
+        seoDescription,
+        seoKeywords,
+        seoOgImage,
       };
 
       const res = await fetch("/api/pages/contact", {
@@ -661,6 +674,20 @@ export default function AdminContactPageEditor() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Right column - SEO Configuration */}
+          <div className="lg:col-span-4 flex flex-col gap-6">
+            <SEOControl
+              seoTitle={seoTitle}
+              setSeoTitle={setSeoTitle}
+              seoDescription={seoDescription}
+              setSeoDescription={setSeoDescription}
+              seoKeywords={seoKeywords}
+              setSeoKeywords={setSeoKeywords}
+              seoOgImage={seoOgImage}
+              setSeoOgImage={setSeoOgImage}
+            />
           </div>
         </div>
       )}

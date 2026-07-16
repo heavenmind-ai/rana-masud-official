@@ -4,8 +4,17 @@ import React from "react";
 import Link from "next/link";
 import { connectToDatabase } from "@/lib/mongodb";
 import { Page } from "@/models/Page";
-import { getPageBySlug } from "@/lib/content";
+import { getPageBySlug, generatePageMetadata } from "@/lib/content";
 import { Calendar, ArrowRight } from "lucide-react";
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return generatePageMetadata(
+    "blog",
+    "Blog & Articles | Rana Masud",
+    "Read the latest articles, writeups, and press statements published by director Rana Masud."
+  );
+}
 
 export default async function BlogFeedPage() {
   let posts: any[] = [];
