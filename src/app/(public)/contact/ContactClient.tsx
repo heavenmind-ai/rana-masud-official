@@ -15,6 +15,21 @@ interface ContactClientProps {
     imdb?: string;
   };
   headerText: string;
+  badgeText?: string;
+  titleText?: string;
+  officeTitle?: string;
+  addressLabel?: string;
+  emailLabel?: string;
+  phoneLabel?: string;
+  socialLabel?: string;
+  formTitle?: string;
+  formNameLabel?: string;
+  formEmailLabel?: string;
+  formSubjectLabel?: string;
+  formMessageLabel?: string;
+  formButtonText?: string;
+  formSuccessTitle?: string;
+  formSuccessText?: string;
 }
 
 export default function ContactClient({
@@ -24,6 +39,21 @@ export default function ContactClient({
   address,
   socials,
   headerText,
+  badgeText = "Reach Out",
+  titleText = "Contact Me",
+  officeTitle = "Office & Inquiries",
+  addressLabel = "Location Address",
+  emailLabel = "Email Inquiries",
+  phoneLabel = "Phone Contact",
+  socialLabel = "Connect Digitally",
+  formTitle = "Send Message",
+  formNameLabel = "Your Name",
+  formEmailLabel = "Email Address",
+  formSubjectLabel = "Subject",
+  formMessageLabel = "Message",
+  formButtonText = "Submit Inquiry",
+  formSuccessTitle = "Message Sent Successfully!",
+  formSuccessText = "Thank you. I will get back to you shortly.",
 }: ContactClientProps) {
   const [formState, setFormState] = useState({
     name: "",
@@ -48,8 +78,8 @@ export default function ContactClient({
     <div className="container mx-auto px-4 py-16 flex flex-col gap-12">
       {/* Page Header */}
       <section className="text-center max-w-3xl mx-auto">
-        <p className="text-xs font-bold text-gold-accent tracking-widest uppercase">Reach Out</p>
-        <h1 className="text-4xl md:text-5xl font-bold mt-2 text-white">Contact Me</h1>
+        <p className="text-xs font-bold text-gold-accent tracking-widest uppercase">{badgeText}</p>
+        <h1 className="text-4xl md:text-5xl font-bold mt-2 text-white">{titleText}</h1>
         <div className="h-0.5 w-16 bg-gold-accent mx-auto mt-4" />
         <p className="text-white/60 mt-6 leading-relaxed">{headerText}</p>
       </section>
@@ -58,7 +88,7 @@ export default function ContactClient({
         {/* Info Column */}
         <div className="lg:col-span-5 flex flex-col justify-between gap-8">
           <div className="flex flex-col gap-6">
-            <h2 className="text-2xl font-bold text-white">Office & Inquiries</h2>
+            <h2 className="text-2xl font-bold text-white">{officeTitle}</h2>
             <div className="h-0.5 w-12 bg-gold-accent mt-1" />
 
             <div className="flex flex-col gap-5 mt-4">
@@ -67,7 +97,7 @@ export default function ContactClient({
                   <MapPin className="h-5 w-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-white text-sm">Location Address</h4>
+                  <h4 className="font-bold text-white text-sm">{addressLabel}</h4>
                   <p className="text-xs text-white/50 mt-1 leading-relaxed">{address}</p>
                 </div>
               </div>
@@ -77,7 +107,7 @@ export default function ContactClient({
                   <Mail className="h-5 w-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-white text-sm">Email Inquiries</h4>
+                  <h4 className="font-bold text-white text-sm">{emailLabel}</h4>
                   {email && (
                     <p className="text-xs text-white/50 mt-1">
                       <a href={`mailto:${email}`} className="hover:text-gold-accent transition-colors">
@@ -103,7 +133,7 @@ export default function ContactClient({
                   <Phone className="h-5 w-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-white text-sm">Phone Contact</h4>
+                  <h4 className="font-bold text-white text-sm">{phoneLabel}</h4>
                   <p className="text-xs text-white/50 mt-1">
                     <a href={`tel:${phone}`} className="hover:text-gold-accent transition-colors">
                       {phone}
@@ -116,7 +146,7 @@ export default function ContactClient({
 
           {/* Social connections */}
           <div className="flex flex-col gap-4">
-            <h4 className="text-xs font-bold text-white/50 uppercase tracking-widest">Connect Digitally</h4>
+            <h4 className="text-xs font-bold text-white/50 uppercase tracking-widest">{socialLabel}</h4>
             <div className="flex gap-4">
               {socials.facebook && (
                 <a
@@ -165,19 +195,19 @@ export default function ContactClient({
         {/* Form Column */}
         <div className="lg:col-span-7">
           <div className="glass-card p-8">
-            <h2 className="text-xl font-bold text-white mb-6">Send Message</h2>
+            <h2 className="text-xl font-bold text-white mb-6">{formTitle}</h2>
             {submitted ? (
               <div className="p-8 rounded-lg bg-gold-accent/10 border border-gold-accent/30 text-center flex flex-col gap-2">
                 <Send className="h-8 w-8 text-gold-accent mx-auto animate-pulse" />
-                <h4 className="font-bold text-white mt-2">Message Sent Successfully!</h4>
-                <p className="text-xs text-white/60">Thank you. I will get back to you shortly.</p>
+                <h4 className="font-bold text-white mt-2">{formSuccessTitle}</h4>
+                <p className="text-xs text-white/60">{formSuccessText}</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5">
                     <label htmlFor="name" className="text-xs text-white/50 font-semibold uppercase">
-                      Your Name
+                      {formNameLabel}
                     </label>
                     <input
                       type="text"
@@ -191,7 +221,7 @@ export default function ContactClient({
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label htmlFor="email" className="text-xs text-white/50 font-semibold uppercase">
-                      Email Address
+                      {formEmailLabel}
                     </label>
                     <input
                       type="email"
@@ -207,7 +237,7 @@ export default function ContactClient({
 
                 <div className="flex flex-col gap-1.5">
                   <label htmlFor="subject" className="text-xs text-white/50 font-semibold uppercase">
-                    Subject
+                    {formSubjectLabel}
                   </label>
                   <input
                     type="text"
@@ -222,7 +252,7 @@ export default function ContactClient({
 
                 <div className="flex flex-col gap-1.5">
                   <label htmlFor="message" className="text-xs text-white/50 font-semibold uppercase">
-                    Message (Optional)
+                    {formMessageLabel}
                   </label>
                   <textarea
                     id="message"
@@ -239,7 +269,7 @@ export default function ContactClient({
                   className="px-6 py-3 rounded-lg bg-gold-accent hover:bg-gold-hover text-black font-semibold tracking-wide transition-all shadow-lg hover:shadow-gold-accent/15 cursor-pointer flex items-center justify-center gap-2 mt-2"
                 >
                   <Send className="h-4 w-4" />
-                  Submit Inquiry
+                  {formButtonText}
                 </button>
               </form>
             )}

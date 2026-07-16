@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import React from "react";
 import { getPageBySlug } from "@/lib/content";
 import { Compass, Globe, MapPin } from "lucide-react";
@@ -14,58 +16,52 @@ export default async function FestivalsPage() {
   }
 
   const internationalFestivals = pageData.frontmatter.internationalFestivals || [
-    { name: "South Asia International Film Festival", country: "Canada" },
-    { name: "Al-Nahj International Film Festival", country: "Iraq" },
-    { name: "Cefalù Film Festival", country: "Italy" },
-    { name: "First-Time Filmmaker Sessions", country: "United Kingdom" },
-    { name: "Festival Ouled Teima du Film International", country: "Morocco" },
-    { name: "Second Al-Sharqiyah International Film Festival", country: "Oman" },
-    { name: "Tripura Tourism Film Utshab", country: "India" },
+    { name: "Ouled Teima International Film Festival", country: "Morocco" },
+    { name: "International Film Festival of South Asia (IFFSA)", country: "Toronto, Canada" },
+    { name: "Al-Nahj International Film Festival", country: "Karbala, Iraq" },
+    { name: "Lift-Off Global Network Sessions", country: "United Kingdom" },
   ];
 
   const nationalFestivals = pageData.frontmatter.nationalFestivals || [
-    { name: "Chittagong SHORT Film Festival", city: "Chittagong" },
-    { name: "Sylhet Film Festival", city: "Sylhet" },
-    { name: "Our Shorts Their Shorts Film Festival", city: "Dhaka" },
+    { name: "Sylhet International Film Festival", city: "Sylhet" },
+    { name: "Chittagong Short Film Festival", city: "Chittagong" },
     { name: "Dheki International Motion Picture Festival", city: "Dhaka" },
-    { name: "Short Film Forum Showcase", city: "Dhaka" },
-    { name: "Bangladesh Shilpakala Academy Short & Docu Festival", city: "Dhaka" },
-    { name: "International Short and Independent Film Festival (14th & 15th)", city: "Dhaka" },
-    { name: "Sat Rong Short Film Festival", city: "Nilphamari" },
+    { name: "Cefal Film Festival Screening", city: "Dhaka" },
   ];
 
   return (
     <div className="container mx-auto px-4 py-16 flex flex-col gap-16">
       {/* Page Header */}
       <section className="text-center max-w-3xl mx-auto">
-        <p className="text-xs font-bold text-gold-accent tracking-widest uppercase">Screenings</p>
-        <h1 className="text-4xl md:text-5xl font-bold mt-2 text-white">Film Festivals</h1>
+        <p className="text-xs font-bold text-gold-accent tracking-widest uppercase">
+          {pageData.frontmatter.festivalsBadgeText || "Screenings"}
+        </p>
+        <h1 className="text-4xl md:text-5xl font-bold mt-2 text-white">
+          {pageData.frontmatter.festivalsTitle || "Film Festivals"}
+        </h1>
         <div className="h-0.5 w-16 bg-gold-accent mx-auto mt-4" />
         <p className="text-white/60 mt-6 leading-relaxed">
           {pageData.frontmatter.headerText ||
-            "Rana Masud's films have traveled globally and nationally, engaging diverse audiences and winning critical praise across multiple international venues."}
+            "Screening selections representing dynamic cinematic works to international forums and regional audiences across Bangladesh."}
         </p>
       </section>
 
-      {/* Columns */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 text-left">
+      {/* Screenings Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* International */}
-        <section className="flex flex-col gap-6">
-          <h2 className="text-2xl font-bold text-white flex items-center gap-3 border-b border-white/5 pb-4">
-            <Globe className="text-gold-accent h-6 w-6" />
-            International Screenings
+        <section className="glass-card p-8 flex flex-col gap-6 text-left border border-white/5 relative overflow-hidden">
+          <div className="absolute top-6 right-6 opacity-10 text-gold-accent">
+            <Globe className="w-12 h-12" />
+          </div>
+          <h2 className="text-2xl font-bold text-white border-b border-white/5 pb-4">
+            {pageData.frontmatter.intlSectionTitle || "International Festivals"}
           </h2>
           <div className="flex flex-col gap-4">
             {internationalFestivals.map((fest: any, idx: number) => (
-              <div key={idx} className="glass-card p-5 flex items-center justify-between gap-4">
-                <div className="flex flex-col gap-1">
-                  <h3 className="font-bold text-white text-base leading-snug">{fest.name}</h3>
-                  <p className="text-xs text-white/40 flex items-center gap-1">
-                    <MapPin className="h-3 w-3 text-gold-accent" />
-                    Host Nation
-                  </p>
-                </div>
-                <span className="px-3 py-1 rounded-full border border-gold-accent/20 bg-gold-accent/5 text-gold-accent text-xs font-semibold">
+              <div key={idx} className="flex justify-between items-center bg-white/5 px-4 py-3.5 rounded-lg border border-white/5 hover:border-gold-accent/20 transition-all">
+                <span className="font-bold text-white text-sm">{fest.name}</span>
+                <span className="text-xs font-semibold text-gold-accent flex items-center gap-1.5 shrink-0 bg-gold-accent/5 border border-gold-accent/20 px-2 py-0.5 rounded">
+                  <Compass className="w-3.5 h-3.5" />
                   {fest.country}
                 </span>
               </div>
@@ -74,22 +70,19 @@ export default async function FestivalsPage() {
         </section>
 
         {/* National */}
-        <section className="flex flex-col gap-6">
-          <h2 className="text-2xl font-bold text-white flex items-center gap-3 border-b border-white/5 pb-4">
-            <Compass className="text-gold-accent h-6 w-6" />
-            National Screenings
+        <section className="glass-card p-8 flex flex-col gap-6 text-left border border-white/5 relative overflow-hidden">
+          <div className="absolute top-6 right-6 opacity-10 text-gold-accent">
+            <MapPin className="w-12 h-12" />
+          </div>
+          <h2 className="text-2xl font-bold text-white border-b border-white/5 pb-4">
+            {pageData.frontmatter.natSectionTitle || "National Festivals"}
           </h2>
           <div className="flex flex-col gap-4">
             {nationalFestivals.map((fest: any, idx: number) => (
-              <div key={idx} className="glass-card p-5 flex items-center justify-between gap-4">
-                <div className="flex flex-col gap-1">
-                  <h3 className="font-bold text-white text-base leading-snug">{fest.name}</h3>
-                  <p className="text-xs text-white/40 flex items-center gap-1">
-                    <MapPin className="h-3 w-3 text-gold-accent" />
-                    Location
-                  </p>
-                </div>
-                <span className="px-3 py-1 rounded-full border border-white/10 bg-white/5 text-white/70 text-xs font-medium">
+              <div key={idx} className="flex justify-between items-center bg-white/5 px-4 py-3.5 rounded-lg border border-white/5 hover:border-gold-accent/20 transition-all">
+                <span className="font-bold text-white text-sm">{fest.name}</span>
+                <span className="text-xs font-semibold text-gold-accent flex items-center gap-1.5 shrink-0 bg-gold-accent/5 border border-gold-accent/20 px-2 py-0.5 rounded">
+                  <MapPin className="w-3.5 h-3.5" />
                   {fest.city}
                 </span>
               </div>

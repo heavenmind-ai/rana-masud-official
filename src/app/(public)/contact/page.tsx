@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import React from "react";
 import { getPageBySlug } from "@/lib/content";
 import { connectToDatabase } from "@/lib/mongodb";
@@ -33,8 +35,9 @@ export default async function ContactPage() {
     console.error("Failed to load contact info from GlobalSettings:", error);
   }
 
+  const fm = pageData?.frontmatter || {};
   const headerText =
-    pageData?.frontmatter.headerText ||
+    fm.headerText ||
     "Get in touch for film production details, commercial TVC creations, speaking assignments, or academic training opportunities.";
 
   return (
@@ -45,6 +48,21 @@ export default async function ContactPage() {
       address={address}
       socials={socials}
       headerText={headerText}
+      badgeText={fm.badgeText}
+      titleText={fm.titleText}
+      officeTitle={fm.officeTitle}
+      addressLabel={fm.addressLabel}
+      emailLabel={fm.emailLabel}
+      phoneLabel={fm.phoneLabel}
+      socialLabel={fm.socialLabel}
+      formTitle={fm.formTitle}
+      formNameLabel={fm.formNameLabel}
+      formEmailLabel={fm.formEmailLabel}
+      formSubjectLabel={fm.formSubjectLabel}
+      formMessageLabel={fm.formMessageLabel}
+      formButtonText={fm.formButtonText}
+      formSuccessTitle={fm.formSuccessTitle}
+      formSuccessText={fm.formSuccessText}
     />
   );
 }

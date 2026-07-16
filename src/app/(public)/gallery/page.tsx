@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import React from "react";
 import { getPageBySlug } from "@/lib/content";
 import GalleryClient from "./GalleryClient";
@@ -80,5 +82,15 @@ export default async function GalleryPage() {
     pageData.frontmatter.headerText ||
     "Explore production stills, behind-the-scenes shoots, award ceremonies, and BFI classroom highlights representing decades of filmmaking.";
 
-  return <GalleryClient galleryItems={galleryItems} headerText={headerText} />;
+  const badgeText = pageData.frontmatter.galleryBadgeText || "Moments";
+  const titleText = pageData.frontmatter.galleryTitle || "Photo Gallery";
+
+  return (
+    <GalleryClient
+      galleryItems={galleryItems}
+      headerText={headerText}
+      badgeText={badgeText}
+      titleText={titleText}
+    />
+  );
 }

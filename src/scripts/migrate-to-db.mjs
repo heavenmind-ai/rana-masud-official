@@ -201,6 +201,9 @@ async function migrate() {
       );
 
       const processedFrontmatter = { ...frontmatter };
+      if (pageMeta.slug.includes("%e0") || pageMeta.slug.includes("blog-")) {
+        processedFrontmatter.isPost = true;
+      }
 
       // Upload frontmatter images
       for (const [key, value] of Object.entries(processedFrontmatter)) {

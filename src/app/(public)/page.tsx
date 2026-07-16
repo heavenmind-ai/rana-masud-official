@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import React from "react";
 import Link from "next/link";
 import { getPageBySlug } from "@/lib/content";
@@ -14,7 +16,7 @@ export default async function HomePage() {
     );
   }
 
-  // Define dynamic/fallback structured film data for quick display
+  // Notable Films list
   const notableFilms = pageData.frontmatter.notableFilms || [
     {
       title: "The Fragrance (আতর)",
@@ -36,6 +38,25 @@ export default async function HomePage() {
     },
   ];
 
+  // Services list
+  const services = pageData.frontmatter.services || [
+    {
+      title: "Film Production",
+      description: "Directing and producing independent narrative films, award-winning shorts, and historical documentaries representing Bangladesh globally.",
+      icon: "Film",
+    },
+    {
+      title: "Academic Teaching",
+      description: "Lecturing at Bangladesh Film Institute (BFI) for over 8 years, educating next-generation directors on Film Production Design and Shot Division.",
+      icon: "BookOpen",
+    },
+    {
+      title: "AD & Commercials",
+      description: "Directed nearly 300 television commercials (TVCs) and Public Service Announcements (PSAs) for prominent national brands and social projects.",
+      icon: "Tv",
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-16 pb-20">
       {/* Cinematic Hero Section */}
@@ -49,14 +70,16 @@ export default async function HomePage() {
           <div className="lg:col-span-7 flex flex-col gap-6 text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gold-accent/20 bg-gold-accent/5 text-xs font-semibold tracking-widest text-gold-accent uppercase w-fit">
               <Award className="h-3.5 w-3.5" />
-              Award Winning Filmmaker
+              {pageData.frontmatter.heroBadgeText || "Award Winning Filmmaker"}
             </div>
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white leading-tight">
-              Crafting Stories <br />
-              <span className="text-gold-accent gold-glow">Throughcompelling Visuals</span>
+              {pageData.frontmatter.heroTitlePrimary || "Crafting Stories"} <br />
+              <span className="text-gold-accent gold-glow">
+                {pageData.frontmatter.heroTitleAccent || "Through compelling Visuals"}
+              </span>
             </h1>
             <p className="text-white/75 text-base md:text-lg leading-relaxed max-w-xl">
-              Rana Masud is a pioneer filmmaker, producer, and teacher in Bangladesh. With over 300 television commercials, award-winning short films, and decades of creative leadership at Ferywala Communications.
+              {pageData.frontmatter.heroDescription || "Rana Masud is a pioneer filmmaker, producer, and teacher in Bangladesh. With over 300 television commercials, award-winning short films, and creative leadership at Ferywala Communications."}
             </p>
             <div className="flex flex-wrap gap-4 mt-2">
               <Link
@@ -64,13 +87,13 @@ export default async function HomePage() {
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gold-accent hover:bg-gold-hover text-black font-semibold tracking-wide transition-all shadow-lg hover:shadow-gold-accent/15 cursor-pointer"
               >
                 <PlayCircle className="h-5 w-5" />
-                Explore Filmography
+                {pageData.frontmatter.heroCtaLeftText || "Explore Filmography"}
               </Link>
               <Link
                 href="/biography"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-white/10 hover:border-gold-accent/30 bg-white/5 hover:bg-white/10 text-white font-semibold tracking-wide transition-all cursor-pointer"
               >
-                Read Biography
+                {pageData.frontmatter.heroCtaRightText || "Read Biography"}
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
@@ -81,15 +104,21 @@ export default async function HomePage() {
             <div className="relative group w-full max-w-[380px] aspect-[4/5] rounded-2xl overflow-hidden border border-white/10 shadow-2xl transition-all duration-500 hover:border-gold-accent/30">
               {/* Profile Image */}
               <img
-                src="/content/home/assets/rana-masud-Profile.png"
+                src={pageData.frontmatter.heroProfileImage || "/content/home/assets/rana-masud-Profile.png"}
                 alt="Rana Masud Profile"
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               {/* Glass Info Card Overlay */}
               <div className="absolute bottom-4 left-4 right-4 p-4 rounded-xl border border-white/10 bg-[#09090b]/80 backdrop-blur-md text-left">
-                <p className="text-xs font-semibold text-gold-accent tracking-widest uppercase">FILM DIRECTOR & TEACHER</p>
-                <h3 className="text-lg font-bold text-white mt-1">Rana Masud</h3>
-                <p className="text-xs text-white/50 mt-0.5">Bangladesh Film Institute (BFI)</p>
+                <p className="text-xs font-semibold text-gold-accent tracking-widest uppercase">
+                  {pageData.frontmatter.heroProfileSubText || "FILM DIRECTOR & TEACHER"}
+                </p>
+                <h3 className="text-lg font-bold text-white mt-1">
+                  {pageData.frontmatter.heroProfileName || "Rana Masud"}
+                </h3>
+                <p className="text-xs text-white/50 mt-0.5">
+                  {pageData.frontmatter.heroProfileInstitution || "Bangladesh Film Institute (BFI)"}
+                </p>
               </div>
             </div>
           </div>
@@ -99,49 +128,47 @@ export default async function HomePage() {
       {/* Services Grid Section */}
       <section className="container mx-auto px-4 py-8">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <p className="text-xs font-bold text-gold-accent tracking-widest uppercase">Expertise</p>
-          <h2 className="text-3xl md:text-4xl font-bold mt-2 text-white">Creative Services</h2>
+          <p className="text-xs font-bold text-gold-accent tracking-widest uppercase">
+            {pageData.frontmatter.servicesSectionBadge || "Expertise"}
+          </p>
+          <h2 className="text-3xl md:text-4xl font-bold mt-2 text-white">
+            {pageData.frontmatter.servicesSectionTitle || "Creative Services"}
+          </h2>
           <div className="h-0.5 w-16 bg-gold-accent mx-auto mt-4" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="glass-card p-8 flex flex-col gap-4 text-center">
-            <div className="mx-auto w-12 h-12 rounded-lg bg-gold-accent/10 flex items-center justify-center text-gold-accent border border-gold-accent/20">
-              <Film className="h-6 w-6" />
-            </div>
-            <h3 className="text-xl font-bold text-white">Film Production</h3>
-            <p className="text-white/60 text-sm leading-relaxed">
-              Directing and producing independent narrative films, award-winning shorts, and historical documentaries representing Bangladesh globally.
-            </p>
-          </div>
-
-          <div className="glass-card p-8 flex flex-col gap-4 text-center">
-            <div className="mx-auto w-12 h-12 rounded-lg bg-gold-accent/10 flex items-center justify-center text-gold-accent border border-gold-accent/20">
-              <BookOpen className="h-6 w-6" />
-            </div>
-            <h3 className="text-xl font-bold text-white">Academic Teaching</h3>
-            <p className="text-white/60 text-sm leading-relaxed">
-              Lecturing at Bangladesh Film Institute (BFI) for over 8 years, educating next-generation directors on Film Production Design and Shot Division.
-            </p>
-          </div>
-
-          <div className="glass-card p-8 flex flex-col gap-4 text-center">
-            <div className="mx-auto w-12 h-12 rounded-lg bg-gold-accent/10 flex items-center justify-center text-gold-accent border border-gold-accent/20">
-              <Tv className="h-6 w-6" />
-            </div>
-            <h3 className="text-xl font-bold text-white">AD & Commercials</h3>
-            <p className="text-white/60 text-sm leading-relaxed">
-              Directed nearly 300 television commercials (TVCs) and Public Service Announcements (PSAs) for prominent national brands and social projects.
-            </p>
-          </div>
+          {services.map((service: any, idx: number) => {
+            const IconComponent =
+              service.icon === "Film"
+                ? Film
+                : service.icon === "BookOpen"
+                ? BookOpen
+                : service.icon === "Tv"
+                ? Tv
+                : Film;
+            return (
+              <div key={idx} className="glass-card p-8 flex flex-col gap-4 text-center">
+                <div className="mx-auto w-12 h-12 rounded-lg bg-gold-accent/10 flex items-center justify-center text-gold-accent border border-gold-accent/20">
+                  <IconComponent className="h-6 w-6" />
+                </div>
+                <h3 className="text-xl font-bold text-white">{service.title}</h3>
+                <p className="text-white/60 text-sm leading-relaxed">{service.description}</p>
+              </div>
+            );
+          })}
         </div>
       </section>
 
       {/* Notable Works Section */}
       <section className="container mx-auto px-4 py-8 bg-[#09090b]">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <p className="text-xs font-bold text-gold-accent tracking-widest uppercase">Highlight Showcase</p>
-          <h2 className="text-3xl md:text-4xl font-bold mt-2 text-white">Notable Films</h2>
+          <p className="text-xs font-bold text-gold-accent tracking-widest uppercase">
+            {pageData.frontmatter.notableFilmsSectionBadge || "Highlight Showcase"}
+          </p>
+          <h2 className="text-3xl md:text-4xl font-bold mt-2 text-white">
+            {pageData.frontmatter.notableFilmsSectionTitle || "Notable Films"}
+          </h2>
           <div className="h-0.5 w-16 bg-gold-accent mx-auto mt-4" />
         </div>
 
@@ -161,15 +188,17 @@ export default async function HomePage() {
                   <h3 className="text-xl font-bold text-white group-hover:text-gold-accent transition-colors">{film.title}</h3>
                   <p className="text-white/60 text-xs leading-relaxed">{film.description}</p>
                 </div>
-                <a
-                  href={film.imdb}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-gold-accent hover:text-white transition-colors mt-auto w-fit"
-                >
-                  IMDb Profile
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </a>
+                {film.imdb && (
+                  <a
+                    href={film.imdb}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-gold-accent hover:text-white transition-colors mt-auto w-fit"
+                  >
+                    IMDb Profile
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </a>
+                )}
               </div>
             </div>
           ))}
