@@ -1,10 +1,11 @@
 export const dynamic = "force-dynamic";
 
-import React from "react";
+import React, { Suspense } from "react";
 import Link from "next/link";
 import { Settings, Facebook, Twitter, Youtube, Link as LinkIcon, ChevronDown } from "lucide-react";
 import { connectToDatabase } from "@/lib/mongodb";
 import { GlobalSettings } from "@/models/GlobalSettings";
+import AnalyticsTracker from "@/components/AnalyticsTracker";
 
 // Fallback configurations if DB is empty or disconnected
 const defaultHeader = {
@@ -95,6 +96,9 @@ export default async function PublicLayout({
 
   return (
     <div className="flex flex-col min-h-screen bg-[#09090b] text-[#f4f4f5]">
+      <Suspense fallback={null}>
+        <AnalyticsTracker />
+      </Suspense>
       {/* Cinematic Navigation Header */}
       <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#09090b]/85 backdrop-blur-md">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">

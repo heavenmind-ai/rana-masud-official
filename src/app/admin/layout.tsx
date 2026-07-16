@@ -5,6 +5,7 @@ import { verifySession } from "@/lib/auth";
 import AdminLoginForm from "@/components/AdminLoginForm";
 import {
   LayoutDashboard,
+  BarChart3,
   ArrowLeft,
   Shield,
   Settings,
@@ -58,6 +59,13 @@ export default async function AdminLayout({
             >
               <LayoutDashboard className="h-4 w-4 text-gold-accent" />
               Dashboard
+            </Link>
+            <Link
+              href="/admin/stats"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:text-white hover:bg-white/5 transition-all"
+            >
+              <BarChart3 className="h-4 w-4 text-gold-accent" />
+              Site Stats
             </Link>
             <Link
               href="/admin/home"
