@@ -27,6 +27,10 @@ export default function AdminPressPageEditor() {
   const [seoDescription, setSeoDescription] = useState("");
   const [seoKeywords, setSeoKeywords] = useState("");
   const [seoOgImage, setSeoOgImage] = useState("");
+  const [pressQuote, setPressQuote] = useState("");
+  const [pressHeaderImage, setPressHeaderImage] = useState("");
+  const [pressButtonText, setPressButtonText] = useState("");
+  const [uploadingHeader, setUploadingHeader] = useState(false);
 
   useEffect(() => {
     async function fetchPress() {
@@ -45,6 +49,9 @@ export default function AdminPressPageEditor() {
         setSeoDescription(fm.seoDescription || "");
         setSeoKeywords(fm.seoKeywords || "");
         setSeoOgImage(fm.seoOgImage || "");
+        setPressQuote(fm.pressQuote || "");
+        setPressHeaderImage(fm.pressHeaderImage || "");
+        setPressButtonText(fm.pressButtonText || "Let's Talk");
       } catch (error) {
         console.error(error);
       } finally {
@@ -84,6 +91,31 @@ export default function AdminPressPageEditor() {
     }
   };
 
+  const handleUploadHeaderImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingHeader(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Upload failed");
+      const { url } = await res.json();
+      setPressHeaderImage(url);
+    } catch (err) {
+      console.error(err);
+      alert("Image upload failed.");
+    } finally {
+      setUploadingHeader(false);
+    }
+  };
+
   const handleSave = async () => {
     setSaveStatus("saving");
     try {
@@ -97,6 +129,9 @@ export default function AdminPressPageEditor() {
         seoDescription,
         seoKeywords,
         seoOgImage,
+        pressQuote,
+        pressHeaderImage,
+        pressButtonText,
       };
 
       const res = await fetch("/api/pages/press", {
@@ -229,6 +264,53 @@ export default function AdminPressPageEditor() {
                 onChange={(e) => setHeaderText(e.target.value)}
                 className="px-3 py-2 rounded-md border border-white/10 bg-white/5 text-white text-xs outline-none focus:border-gold-accent/40 resize-none animate-none"
               />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] text-white/40 font-bold uppercase">Header Highlight Quote</label>
+                <input
+                  type="text"
+                  value={pressQuote}
+                  onChange={(e) => setPressQuote(e.target.value)}
+                  className="px-3 py-2 rounded-md border border-white/10 bg-white/5 text-white text-xs outline-none focus:border-gold-accent/40"
+                  placeholder="e.g. Cinema is a mirror..."
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] text-white/40 font-bold uppercase">Let's Talk Button Label</label>
+                <input
+                  type="text"
+                  value={pressButtonText}
+                  onChange={(e) => setPressButtonText(e.target.value)}
+                  className="px-3 py-2 rounded-md border border-white/10 bg-white/5 text-white text-xs outline-none focus:border-gold-accent/40"
+                  placeholder="e.g. Let's Talk"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-[10px] text-white/40 font-bold uppercase">Header Right Side Image</label>
+              <div className="flex gap-2 items-center">
+                <label className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-white/10 hover:border-gold-accent/20 bg-white/5 hover:bg-white/10 text-xs text-white/60 hover:text-white cursor-pointer transition-colors shrink-0">
+                  <ImageIcon className="h-4 w-4 text-gold-accent" />
+                  {uploadingHeader ? "Uploading..." : "Upload Header Image"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleUploadHeaderImage}
+                    className="hidden"
+                    disabled={uploadingHeader}
+                  />
+                </label>
+                <input
+                  type="text"
+                  value={pressHeaderImage}
+                  readOnly
+                  className="flex-1 px-2.5 py-1.5 rounded bg-black/50 border border-white/5 text-white/30 text-xs font-mono select-all outline-none"
+                  placeholder="Header image URL..."
+                />
+              </div>
             </div>
           </div>
 

@@ -253,6 +253,26 @@ export default async function HomePage() {
 
       {/* Our Clients Section */}
       <ClientsMarquee logos={clientLogos} />
+
+      {/* JSON-LD Person Schema Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Rana Masud",
+            "jobTitle": "Film Director, Producer & Teacher",
+            "url": "https://ranamasud.com",
+            "sameAs": [
+              "https://www.imdb.com/name/nm7851085/",
+              "https://facebook.com",
+              "https://linkedin.com"
+            ],
+            "description": "Official portfolio website of Rana Masud - Film Director, Producer, and Teacher."
+          })
+        }}
+      />
     </div>
   );
 }
