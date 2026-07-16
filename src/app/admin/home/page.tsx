@@ -88,6 +88,55 @@ export default function AdminHomePageEditor() {
     }
   };
 
+  const handleAddSliderImage = () => {
+    setFrontmatter((prev: any) => ({
+      ...prev,
+      heroSliderImages: [...(prev.heroSliderImages || []), ""],
+    }));
+  };
+
+  const handleRemoveSliderImage = (index: number) => {
+    setFrontmatter((prev: any) => ({
+      ...prev,
+      heroSliderImages: prev.heroSliderImages.filter((_: any, i: number) => i !== index),
+    }));
+  };
+
+  const handleSliderImageChange = (index: number, value: string) => {
+    setFrontmatter((prev: any) => {
+      const updated = [...(prev.heroSliderImages || [])];
+      updated[index] = value;
+      return { ...prev, heroSliderImages: updated };
+    });
+  };
+
+  const handleUploadSliderImage = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingField(`slider-${index}`);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Upload failed");
+      const { url } = await res.json();
+
+      handleSliderImageChange(index, url);
+    } catch (err) {
+      console.error(err);
+      alert("Slider image upload failed.");
+    } finally {
+      setUploadingField(null);
+    }
+  };
+
   const handleSave = async () => {
     setSaveStatus("saving");
     try {
@@ -577,6 +626,62 @@ export default function AdminHomePageEditor() {
                   disabled={uploadingField !== null}
                 />
               </label>
+            </div>
+          </div>
+
+          {/* Hero Background Slider Card */}
+          <div className="glass-card p-6 flex flex-col gap-4 border border-white/10">
+            <div className="flex justify-between items-center pb-2 border-b border-white/5">
+              <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest">Hero Background Slider</h3>
+              <button
+                type="button"
+                onClick={handleAddSliderImage}
+                className="text-[10px] bg-gold-accent/10 hover:bg-gold-accent/20 text-gold-accent border border-gold-accent/20 px-2 py-1 rounded flex items-center gap-1 cursor-pointer font-bold"
+              >
+                <Plus className="h-3 w-3" /> Add Image
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-3 max-h-[400px] overflow-y-auto pr-1">
+              {(frontmatter.heroSliderImages || []).map((imgUrl: string, idx: number) => (
+                <div key={idx} className="flex flex-col gap-2 bg-white/5 p-3 rounded-lg border border-white/5 relative">
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveSliderImage(idx)}
+                    className="absolute top-2 right-2 text-red-500/60 hover:text-red-500 hover:bg-red-500/10 p-1 rounded cursor-pointer transition-colors"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+
+                  <label className="text-[10px] text-white/40 font-bold uppercase">Slider Image {idx + 1}</label>
+                  {imgUrl ? (
+                    <img
+                      src={imgUrl}
+                      alt={`Slider Preview ${idx + 1}`}
+                      className="w-full aspect-[16/9] object-cover rounded border border-white/10"
+                    />
+                  ) : (
+                    <div className="w-full aspect-[16/9] bg-black/40 rounded border border-dashed border-white/10 flex items-center justify-center text-white/20 text-xs">
+                      No image uploaded
+                    </div>
+                  )}
+
+                  <label className="flex items-center justify-center gap-1.5 w-full py-1.5 mt-1 rounded bg-white/5 hover:bg-white/10 border border-white/10 text-white text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-colors">
+                    <ImageIcon className="h-3.5 w-3.5 text-white/60" />
+                    <span>{uploadingField === `slider-${idx}` ? "Uploading..." : "Upload Image"}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleUploadSliderImage(e, idx)}
+                      className="hidden"
+                      disabled={uploadingField !== null}
+                    />
+                  </label>
+                </div>
+              ))}
+              {(frontmatter.heroSliderImages || []).length === 0 && (
+                <p className="text-xs text-white/35 italic text-center py-4">No slider images uploaded. Default cinematic background will be used.</p>
+              )}
             </div>
           </div>
         </div>

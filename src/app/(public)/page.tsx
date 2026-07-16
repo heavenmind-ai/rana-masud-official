@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { getPageBySlug } from "@/lib/content";
 import { Award, Film, PlayCircle, BookOpen, Tv, ArrowRight } from "lucide-react";
+import HeroBackgroundSlider from "@/components/HeroBackgroundSlider";
 
 export default async function HomePage() {
   const pageData = await getPageBySlug("home");
@@ -61,6 +62,9 @@ export default async function HomePage() {
     <div className="flex flex-col gap-16 pb-20">
       {/* Cinematic Hero Section */}
       <section className="relative min-h-[85vh] flex items-center justify-center py-20 overflow-hidden border-b border-white/5 bg-gradient-to-b from-[#0c0c0e] via-[#09090b] to-[#09090b]">
+        {/* Background Image Slider */}
+        <HeroBackgroundSlider images={pageData.frontmatter.heroSliderImages || []} />
+
         {/* Glow Effects */}
         <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gold-accent/5 rounded-full blur-[100px] pointer-events-none" />
         <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-96 h-96 bg-gold-accent/5 rounded-full blur-[100px] pointer-events-none" />

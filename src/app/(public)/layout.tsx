@@ -2,15 +2,13 @@ export const dynamic = "force-dynamic";
 
 import React from "react";
 import Link from "next/link";
-import { Settings, Facebook, Twitter, Youtube, Link as LinkIcon } from "lucide-react";
-import * as icons from "lucide-react";
+import { Settings, Facebook, Twitter, Youtube, Link as LinkIcon, ChevronDown } from "lucide-react";
 import { connectToDatabase } from "@/lib/mongodb";
 import { GlobalSettings } from "@/models/GlobalSettings";
 
 // Fallback configurations if DB is empty or disconnected
 const defaultHeader = {
-  logoText: "Rana Masud",
-  logoIcon: "Film",
+  logoImage: "",
   menuLinks: [
     { label: "Home", href: "/" },
     { label: "Biography", href: "/biography" },
@@ -41,10 +39,16 @@ async function getHeaderFooterSettings() {
     await connectToDatabase();
     const headerDoc = await GlobalSettings.findOne({ key: "header" }).lean();
     const footerDoc = await GlobalSettings.findOne({ key: "footer" }).lean();
-    return {
-      header: headerDoc ? (headerDoc as any).data : defaultHeader,
-      footer: footerDoc ? (footerDoc as any).data : defaultFooter,
-    };
+    
+    const header = headerDoc ? (headerDoc as any).data : defaultHeader;
+    const footer = footerDoc ? (footerDoc as any).data : defaultFooter;
+
+    // Bulletproof fallback: if menuLinks is empty or missing in database, restore default links
+    if (!header.menuLinks || header.menuLinks.length === 0) {
+      header.menuLinks = defaultHeader.menuLinks;
+    }
+
+    return { header, footer };
   } catch (error) {
     console.error("Failed to load header/footer settings, using fallbacks:", error);
     return {
@@ -54,10 +58,6 @@ async function getHeaderFooterSettings() {
   }
 }
 
-function DynamicLogoIcon({ name, className }: { name: string; className?: string }) {
-  const IconComponent = (icons as any)[name] || (icons as any).Film;
-  return <IconComponent className={className} />;
-}
 
 export default async function PublicLayout({
   children,
@@ -66,6 +66,22 @@ export default async function PublicLayout({
 }) {
   const { header, footer } = await getHeaderFooterSettings();
 
+  // Split links into main bar and dropdown
+  const mainLinks = header.menuLinks.filter((link: any) =>
+    ["home", "biography", "gallery", "contact"].includes(link.label.toLowerCase()) ||
+    ["/", "/biography", "/gallery", "/contact"].includes(link.href)
+  );
+
+  const dropdownLinks = header.menuLinks.filter((link: any) =>
+    !["home", "biography", "gallery", "contact"].includes(link.label.toLowerCase()) &&
+    !["/", "/biography", "/gallery", "/contact"].includes(link.href)
+  );
+
+  const homeLink = mainLinks.find((l: any) => l.href === "/" || l.label.toLowerCase() === "home");
+  const bioLink = mainLinks.find((l: any) => l.href === "/biography" || l.label.toLowerCase() === "biography");
+  const galleryLink = mainLinks.find((l: any) => l.href === "/gallery" || l.label.toLowerCase() === "gallery");
+  const contactLink = mainLinks.find((l: any) => l.href === "/contact" || l.label.toLowerCase() === "contact");
+
   return (
     <div className="flex flex-col min-h-screen bg-[#09090b] text-[#f4f4f5]">
       {/* Cinematic Navigation Header */}
@@ -73,23 +89,62 @@ export default async function PublicLayout({
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-2 font-bold tracking-widest text-gold-accent hover:opacity-80 transition-opacity"
+            className="flex items-center hover:opacity-80 transition-opacity shrink-0"
           >
-            <DynamicLogoIcon name={header.logoIcon} className="h-6 w-6 text-gold-accent" />
-            <span className="uppercase text-lg">{header.logoText}</span>
+            {header.logoImage && (
+              <img
+                src={header.logoImage}
+                alt="Rana Masud"
+                className="h-10 w-auto object-contain"
+              />
+            )}
           </Link>
 
-          {/* Dynamic Nav Links */}
+          {/* Dynamic Nav Links with Works Dropdown */}
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-            {header.menuLinks.map((link: any, idx: number) => (
-              <Link
-                key={idx}
-                href={link.href}
-                className="hover:text-gold-accent transition-colors"
-              >
-                {link.label}
+            {homeLink && (
+              <Link href={homeLink.href} className="hover:text-gold-accent transition-colors">
+                {homeLink.label}
               </Link>
-            ))}
+            )}
+            
+            {bioLink && (
+              <Link href={bioLink.href} className="hover:text-gold-accent transition-colors">
+                {bioLink.label}
+              </Link>
+            )}
+
+            {dropdownLinks.length > 0 && (
+              <div className="relative group py-2">
+                <button className="flex items-center gap-1 hover:text-gold-accent transition-colors cursor-pointer">
+                  Works
+                  <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+                </button>
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-44 rounded-xl border border-white/10 bg-[#0c0c0e]/95 backdrop-blur-md p-1.5 shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 flex flex-col gap-0.5 z-50">
+                  {dropdownLinks.map((link: any, idx: number) => (
+                    <Link
+                      key={idx}
+                      href={link.href}
+                      className="px-3 py-2 rounded-lg hover:bg-white/5 hover:text-gold-accent transition-colors text-xs text-left"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {galleryLink && (
+              <Link href={galleryLink.href} className="hover:text-gold-accent transition-colors">
+                {galleryLink.label}
+              </Link>
+            )}
+
+            {contactLink && (
+              <Link href={contactLink.href} className="hover:text-gold-accent transition-colors">
+                {contactLink.label}
+              </Link>
+            )}
           </nav>
 
         </div>
