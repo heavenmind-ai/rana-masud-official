@@ -61,17 +61,32 @@ export default function ContactClient({
     subject: "",
     message: "",
   });
+  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formState.name || !formState.email || !formState.subject) return;
+    if (!formState.name || !formState.email || !formState.subject || !formState.message) return;
 
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
+    setSubmitting(true);
+    setErrorMsg("");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formState),
+      });
+
+      if (!res.ok) throw new Error("Failed to send message. Please try again.");
+
+      setSubmitted(true);
       setFormState({ name: "", email: "", subject: "", message: "" });
-    }, 3000);
+    } catch (err: any) {
+      setErrorMsg(err.message || "Something went wrong.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -264,12 +279,17 @@ export default function ContactClient({
                   />
                 </div>
 
+                {errorMsg && (
+                  <p className="text-xs text-red-500 font-semibold">{errorMsg}</p>
+                )}
+
                 <button
                   type="submit"
-                  className="px-6 py-3 rounded-lg bg-gold-accent hover:bg-gold-hover text-black font-semibold tracking-wide transition-all shadow-lg hover:shadow-gold-accent/15 cursor-pointer flex items-center justify-center gap-2 mt-2"
+                  disabled={submitting}
+                  className="px-6 py-3 rounded-lg bg-gold-accent hover:bg-gold-hover disabled:bg-white/10 disabled:text-white/40 disabled:cursor-not-allowed text-black font-semibold tracking-wide transition-all shadow-lg hover:shadow-gold-accent/15 cursor-pointer flex items-center justify-center gap-2 mt-2"
                 >
-                  <Send className="h-4 w-4" />
-                  {formButtonText}
+                  <Send className={`h-4 w-4 ${submitting ? "animate-pulse" : ""}`} />
+                  {submitting ? "Submitting Inquiry..." : formButtonText}
                 </button>
               </form>
             )}
