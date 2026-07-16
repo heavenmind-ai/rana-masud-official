@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import React from "react";
+import Link from "next/link";
 import { getPageBySlug, generatePageMetadata } from "@/lib/content";
 import { Newspaper, ExternalLink } from "lucide-react";
 import type { Metadata } from "next";
@@ -31,15 +32,39 @@ export default async function PressPage() {
 
   const badgeText = pageData.frontmatter.pressBadgeText || "Media Presence";
   const titleText = pageData.frontmatter.pressTitle || "Press & Media";
+  const pressQuote = pageData.frontmatter.pressQuote || "Cinema is a mirror that can focus or distort, but in the hands of a storyteller, it must always speak truth.";
+  const pressHeaderImage = pageData.frontmatter.pressHeaderImage || "/content/home/assets/Director-Rana-Masud.jpg";
+  const pressButtonText = pageData.frontmatter.pressButtonText || "Let's Talk";
 
   return (
     <div className="container mx-auto px-4 py-16 flex flex-col gap-16">
       {/* Page Header */}
-      <section className="text-center max-w-3xl mx-auto">
-        <p className="text-xs font-bold text-gold-accent tracking-widest uppercase">{badgeText}</p>
-        <h1 className="text-4xl md:text-5xl font-bold mt-2 text-white">{titleText}</h1>
-        <div className="h-0.5 w-16 bg-gold-accent mx-auto mt-4" />
-        <p className="text-white/60 mt-6 leading-relaxed">{headerText}</p>
+      <section className="glass-card p-8 md:p-12 border border-white/5 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center text-left">
+        <div className="lg:col-span-7 flex flex-col gap-6">
+          <p className="text-xs font-bold text-gold-accent tracking-widest uppercase">{badgeText}</p>
+          <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight">{titleText}</h1>
+          
+          <blockquote className="border-l-2 border-gold-accent pl-4 italic text-white/85 text-lg font-serif">
+            "{pressQuote}"
+          </blockquote>
+          
+          <p className="text-white/60 text-sm leading-relaxed">{headerText}</p>
+          
+          <Link
+            href="/contact"
+            className="inline-flex items-center justify-center bg-gold-accent hover:bg-gold-hover text-black font-bold text-xs tracking-wider uppercase px-5 py-3 rounded-lg w-fit transition-colors cursor-pointer"
+          >
+            {pressButtonText}
+          </Link>
+        </div>
+        
+        <div className="lg:col-span-5 relative aspect-[4/3] md:aspect-[3/2] lg:aspect-square w-full rounded-lg overflow-hidden border border-white/10 shadow-2xl bg-zinc-950/40">
+          <img
+            src={pressHeaderImage}
+            alt="Press Header Cover"
+            className="w-full h-full object-cover"
+          />
+        </div>
       </section>
 
       {/* Press Grid */}
@@ -81,10 +106,10 @@ export default async function PressPage() {
                     href={item.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-gold-accent hover:text-white transition-colors mt-auto w-fit cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gold-accent hover:bg-gold-hover text-black text-[10px] font-bold uppercase tracking-wider rounded transition-colors mt-auto w-fit cursor-pointer"
                   >
                     Read Full Article
-                    <ExternalLink className="h-3.5 w-3.5" />
+                    <ExternalLink className="h-3 w-3" />
                   </a>
                 )}
               </div>

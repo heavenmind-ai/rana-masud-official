@@ -96,10 +96,20 @@ export default async function AwardsPage() {
               <Award className="w-36 h-36" />
             </div>
 
-            <div className="flex flex-col gap-4">
+            {award.image ? (
+              <div className="relative aspect-[16/9] w-full rounded-lg overflow-hidden border border-white/5 bg-zinc-950/40 shrink-0">
+                <img
+                  src={award.image}
+                  alt={award.title}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </div>
+            ) : (
               <div className="w-12 h-12 rounded-lg bg-gold-accent/10 border border-gold-accent/20 flex items-center justify-center text-gold-accent shrink-0">
                 <Award className="h-6 w-6" />
               </div>
+            )}
+            <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-1">
                 <span className="text-xs font-bold text-gold-accent tracking-wider">{award.event}</span>
                 <span className="text-xs text-white/40">

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Save, Plus, Trash2, CheckCircle2, AlertCircle } from "lucide-react";
+import { Save, Plus, Trash2, CheckCircle2, AlertCircle, Image as ImageIcon } from "lucide-react";
 import SEOControl from "@/components/SEOControl";
 
 interface AwardItem {
@@ -11,6 +11,7 @@ interface AwardItem {
   location: string;
   year: string;
   description: string;
+  image?: string;
 }
 
 export default function AdminAwardsPageEditor() {
@@ -27,6 +28,7 @@ export default function AdminAwardsPageEditor() {
   const [seoDescription, setSeoDescription] = useState("");
   const [seoKeywords, setSeoKeywords] = useState("");
   const [seoOgImage, setSeoOgImage] = useState("");
+  const [uploadingAwardIdx, setUploadingAwardIdx] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetchAwards() {
@@ -92,7 +94,7 @@ export default function AdminAwardsPageEditor() {
   const handleAddAward = () => {
     setAwards((prev) => [
       ...prev,
-      { title: "New Award Title", film: "", event: "", location: "", year: "2026", description: "" },
+      { title: "New Award Title", film: "", event: "", location: "", year: "2026", description: "", image: "" },
     ]);
   };
 
@@ -106,6 +108,36 @@ export default function AdminAwardsPageEditor() {
       updated[index] = { ...updated[index], [field]: value };
       return updated;
     });
+  };
+
+  const handleUploadAwardImage = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingAwardIdx(index);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Upload failed");
+      const { url } = await res.json();
+      
+      setAwards((prev) => {
+        const updated = [...prev];
+        updated[index] = { ...updated[index], image: url };
+        return updated;
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Image upload failed.");
+    } finally {
+      setUploadingAwardIdx(null);
+    }
   };
 
   if (loading) {
@@ -283,6 +315,46 @@ export default function AdminAwardsPageEditor() {
                       onChange={(e) => handleAwardChange(index, "description", e.target.value)}
                       className="px-2.5 py-1.5 rounded bg-black/40 border border-white/10 text-white text-xs outline-none focus:border-gold-accent/40 resize-none leading-normal"
                     />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                    {/* Image Upload */}
+                    <div className="flex flex-col gap-2">
+                      <label className="text-[9px] text-white/40 font-bold uppercase">Award Laurel / Certificate Image</label>
+                      <div className="flex gap-2 items-center">
+                        <label className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-white/10 hover:border-gold-accent/20 bg-white/5 hover:bg-white/10 text-xs text-white/60 hover:text-white cursor-pointer transition-colors shrink-0">
+                          <ImageIcon className="h-4 w-4 text-gold-accent" />
+                          {uploadingAwardIdx === index ? "Uploading..." : "Upload Image"}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleUploadAwardImage(e, index)}
+                            className="hidden"
+                            disabled={uploadingAwardIdx !== null}
+                          />
+                        </label>
+                        <input
+                          type="text"
+                          value={award.image || ""}
+                          readOnly
+                          className="flex-1 px-2.5 py-1.5 rounded bg-black/50 border border-white/5 text-white/30 text-xs font-mono select-all outline-none"
+                          placeholder="Image URL..."
+                        />
+                      </div>
+                    </div>
+                    {/* Preview */}
+                    {award.image && (
+                      <div className="flex items-center gap-3 bg-black/20 p-2 rounded border border-white/5 w-fit">
+                        <img src={award.image} alt="Award Laurel" className="h-10 w-16 object-cover rounded" />
+                        <button
+                          type="button"
+                          onClick={() => handleAwardChange(index, "image", "")}
+                          className="text-red-500 hover:text-red-400 text-[10px] font-bold uppercase px-2 py-1 cursor-pointer"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
