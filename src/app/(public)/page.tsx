@@ -180,10 +180,10 @@ export default async function HomePage() {
               service.icon === "Film"
                 ? Film
                 : service.icon === "BookOpen"
-                ? BookOpen
-                : service.icon === "Tv"
-                ? Tv
-                : Film;
+                  ? BookOpen
+                  : service.icon === "Tv"
+                    ? Tv
+                    : Film;
             return (
               <div key={idx} className="glass-card p-8 flex flex-col gap-4 text-center">
                 <div className="mx-auto w-12 h-12 rounded-lg bg-gold-accent/10 flex items-center justify-center text-gold-accent border border-gold-accent/20">
