@@ -12,9 +12,9 @@ export default async function BlogFeedPage() {
     "%e0%a6%85%e0%a6%b8%e0%a6%b9%e0%a6%af-%e0%a6%ae%e0%a6%a8%e0%a6%b7%e0%a6%b0-%e0%a6%9c%e0%a6%a8%e0%a6%af-%e0%a6%85%e0%a6%a8%e0%a6%b2-rana-masud-film-director"
   ];
 
-  const posts = blogPostSlugs
-    .map(slug => getPageBySlug(slug))
-    .filter(post => post !== null);
+  const posts = (await Promise.all(
+    blogPostSlugs.map((slug) => getPageBySlug(slug))
+  )).filter((post) => post !== null);
 
   // Fallback metadata for displays
   const fallbackImages: Record<string, string> = {

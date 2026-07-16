@@ -11,9 +11,9 @@ export default async function PageEditorPage({
 }) {
   const resolvedParams = await params;
   const slug = decodeURIComponent(resolvedParams.slug);
-  const pageData = getPageBySlug(slug);
+  const pageData = await getPageBySlug(slug);
 
-  const assets = getPageAssets(slug);
+  const assets = await getPageAssets(slug);
 
   if (!pageData) {
     return (

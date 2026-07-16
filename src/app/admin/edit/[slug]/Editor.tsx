@@ -20,8 +20,56 @@ export default function Editor({ initialData, assets }: EditorProps) {
   const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
   const [copiedAsset, setCopiedAsset] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setUploadError(null);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to upload image");
+      }
+
+      const { url, filename } = await res.json();
+      const markdownCode = `![${filename.split("/").pop()?.split(".")[0] || "Image"}](${url})`;
+
+      if (textareaRef.current) {
+        const textarea = textareaRef.current;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        const newText = text.substring(0, start) + "\n" + markdownCode + "\n" + text.substring(end);
+        setContent(newText);
+        setTimeout(() => {
+          textarea.focus();
+          textarea.setSelectionRange(start + markdownCode.length + 2, start + markdownCode.length + 2);
+        }, 50);
+      } else {
+        setContent((prev) => `${prev}\n${markdownCode}\n`);
+      }
+    } catch (err: any) {
+      console.error(err);
+      setUploadError(err.message || "Failed to upload image");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSave = async () => {
     setSaveStatus("saving");
@@ -177,32 +225,34 @@ export default function Editor({ initialData, assets }: EditorProps) {
           />
         </div>
 
-        {/* Images assets pool selector */}
-        {assets.length > 0 && (
-          <div className="flex flex-col gap-2 mt-2 pt-3 border-t border-white/5">
-            <h4 className="text-xs font-bold text-white/40 uppercase tracking-widest flex items-center gap-1">
-              <ImageIcon className="h-3.5 w-3.5 text-gold-accent/70" />
-              Page Assets (Click to insert/copy code)
-            </h4>
-            <div className="flex gap-3 overflow-x-auto pb-2">
-              {assets.map((asset) => (
-                <div
-                  key={asset}
-                  onClick={() => handleAssetClick(asset)}
-                  className="relative h-14 aspect-video rounded border border-white/10 overflow-hidden bg-black shrink-0 cursor-pointer hover:border-gold-accent/40 transition-colors"
-                  title="Click to copy markdown and insert"
-                >
-                  <img src={asset} alt="Asset snippet" className="w-full h-full object-cover" />
-                  {copiedAsset === asset && (
-                    <div className="absolute inset-0 bg-emerald-600/90 flex items-center justify-center text-[10px] font-bold text-white uppercase tracking-wider">
-                      Copied
-                    </div>
-                  )}
-                </div>
-              ))}
+        {/* Cloudflare R2 Upload Area */}
+        <div className="flex flex-col gap-2 mt-2 pt-3 border-t border-white/5">
+          <h4 className="text-xs font-bold text-white/40 uppercase tracking-widest flex items-center gap-1">
+            <ImageIcon className="h-3.5 w-3.5 text-gold-accent/70" />
+            Media Upload (Cloudflare R2)
+          </h4>
+          <div className="flex flex-col sm:flex-row gap-4 items-center mt-1">
+            <label className="flex flex-col items-center justify-center w-full sm:w-auto px-6 py-4 rounded-lg border border-dashed border-white/15 hover:border-gold-accent/40 bg-white/5 hover:bg-white/10 transition-colors cursor-pointer text-center text-xs font-semibold text-white/60 hover:text-white shrink-0">
+              <ImageIcon className="h-5 w-5 text-gold-accent mb-1.5" />
+              {uploading ? "Uploading file..." : "Select & Upload Image"}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+                className="hidden"
+              />
+            </label>
+            <div className="flex-1 text-left">
+              <p className="text-[10px] text-white/40 leading-normal">
+                Supports JPG, PNG, WEBP, SVG, and GIF. Images are uploaded to Cloudflare R2 and inserted automatically into your Markdown body at your cursor position.
+              </p>
+              {uploadError && (
+                <p className="text-red-500 text-[10px] font-bold mt-1 uppercase tracking-wider">{uploadError}</p>
+              )}
             </div>
           </div>
-        )}
+        </div>
       </div>
 
       {/* Live Preview Pane */}

@@ -8,7 +8,7 @@ export async function GET(
   try {
     const { slug: rawSlug } = await params;
     const slug = decodeURIComponent(rawSlug);
-    const page = getPageBySlug(slug);
+    const page = await getPageBySlug(slug);
     if (!page) {
       return NextResponse.json({ error: "Page not found" }, { status: 404 });
     }
@@ -33,9 +33,9 @@ export async function POST(
       return NextResponse.json({ error: "Invalid payload details" }, { status: 400 });
     }
 
-    const success = savePageData(slug, frontmatter, content);
+    const success = await savePageData(slug, frontmatter, content);
     if (!success) {
-      return NextResponse.json({ error: "Page not found in manifest" }, { status: 404 });
+      return NextResponse.json({ error: "Page save failed" }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, message: "Page saved successfully!" });
@@ -44,4 +44,3 @@ export async function POST(
     return NextResponse.json({ error: "Failed to save page data" }, { status: 500 });
   }
 }
-

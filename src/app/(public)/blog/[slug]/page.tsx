@@ -12,7 +12,7 @@ export default async function BlogPostPage({
   // Decode the slug to map the manifest entry
   const resolvedParams = await params;
   const slug = decodeURIComponent(resolvedParams.slug);
-  const post = getPageBySlug(slug);
+  const post = await getPageBySlug(slug);
 
 
   if (!post) {

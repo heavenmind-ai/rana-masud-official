@@ -3,7 +3,7 @@ import { getManifest } from "@/lib/content";
 
 export async function GET() {
   try {
-    const manifest = getManifest();
+    const manifest = await getManifest();
     return NextResponse.json(manifest);
   } catch (error) {
     console.error("Failed to read manifest:", error);

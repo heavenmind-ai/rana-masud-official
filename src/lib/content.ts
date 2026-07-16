@@ -1,13 +1,5 @@
-import fs from "fs";
-import path from "path";
-import matter from "gray-matter";
-
-// Constants mapping to local directories
-const ROOT_DIR = process.cwd();
-const OUTPUT_DIR = path.join(ROOT_DIR, "output");
-const MANIFEST_PATH = path.join(OUTPUT_DIR, "manifest.json");
-const CONTENT_DIR = path.join(OUTPUT_DIR, "content");
-const PUBLIC_CONTENT_DIR = path.join(ROOT_DIR, "public", "content");
+import { connectToDatabase } from "./mongodb";
+import { Page } from "@/models/Page";
 
 export interface PageMetadata {
   url: string;
@@ -29,123 +21,95 @@ export interface PageData extends PageMetadata {
   rawMarkdown: string;
 }
 
-// Ensure the symbolic link or public folder is set up for assets
-export function setupContentAssetsLink() {
-  try {
-    if (!fs.existsSync(path.dirname(PUBLIC_CONTENT_DIR))) {
-      fs.mkdirSync(path.dirname(PUBLIC_CONTENT_DIR), { recursive: true });
-    }
-
-    if (!fs.existsSync(PUBLIC_CONTENT_DIR)) {
-      // Create symlink from output/content to public/content for Next.js to serve images
-      fs.symlinkSync(CONTENT_DIR, PUBLIC_CONTENT_DIR, "dir");
-      console.log("Created content assets symlink in public folder.");
-    }
-  } catch (error) {
-    console.error("Failed to link assets directory. Trying to copy key assets as fallback.", error);
-  }
-}
+// Ensure the symbolic link is set up (noop in database mode)
+export function setupContentAssetsLink() {}
 
 // Get the manifest list of all pages
-export function getManifest(): ManifestData {
-  setupContentAssetsLink();
-  if (!fs.existsSync(MANIFEST_PATH)) {
+export async function getManifest(): Promise<ManifestData> {
+  try {
+    await connectToDatabase();
+    const pages = await Page.find({}, "slug title frontmatter content").lean();
+    
+    return {
+      pages: pages.map((p: any) => {
+        // Count image references in markdown content
+        const imageCount = (p.content.match(/\!\[.*?\]\(.*?\)/g) || []).length;
+        return {
+          slug: p.slug,
+          title: p.title || p.frontmatter?.title || p.slug,
+          url: `/${p.slug === "home" ? "" : p.slug}`,
+          contentFile: `output/content/${p.slug}/index.md`,
+          assetsDir: `output/content/${p.slug}/assets`,
+          imageCount,
+        };
+      }),
+    };
+  } catch (error) {
+    console.error("Failed to fetch manifest from DB:", error);
     return { pages: [] };
   }
-  const data = fs.readFileSync(MANIFEST_PATH, "utf8");
-  return JSON.parse(data) as ManifestData;
-}
-
-// Save the manifest data
-export function saveManifest(manifest: ManifestData) {
-  fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2), "utf8");
-}
-
-// Process markdown content to replace relative image paths with public URLs
-export function processMarkdownImages(content: string, slug: string): string {
-  // Replace references like `./assets/image.jpg` with `/content/slug/assets/image.jpg`
-  // Also matches simple `assets/image.jpg`
-  const regex = /(\!\[.*?\]\()(\.\/)?(assets\/[^\)]+)(\))/g;
-  return content.replace(regex, (match, p1, p2, p3, p4) => {
-    return `${p1}/content/${slug}/${p3}${p4}`;
-  });
-}
-
-// Revert public URLs back to local markdown paths before saving
-export function revertMarkdownImages(content: string, slug: string): string {
-  // Replaces `/content/slug/assets/image.jpg` back to `./assets/image.jpg`
-  const regex = new RegExp(`(\\!\\[.*?\\]\\()(\\/content\\/${slug}\\/)(assets\\/[^\\)]+)(\\))`, "g");
-  return content.replace(regex, (match, p1, p2, p3, p4) => {
-    return `${p1}./${p3}${p4}`;
-  });
 }
 
 // Fetch single page data by slug
-export function getPageBySlug(slug: string): PageData | null {
-  const manifest = getManifest();
-  const pageMeta = manifest.pages.find((p) => p.slug === slug || encodeURIComponent(p.slug) === slug);
-  if (!pageMeta) return null;
-
-  const fullPath = path.join(OUTPUT_DIR, pageMeta.contentFile);
-  if (!fs.existsSync(fullPath)) return null;
-
-  const fileContents = fs.readFileSync(fullPath, "utf8");
-  const { data: frontmatter, content } = matter(fileContents);
-
-  // Process the content body to make image URLs resolve correctly in Next.js
-  const processedContent = processMarkdownImages(content, pageMeta.slug);
-
-  return {
-    ...pageMeta,
-    frontmatter,
-    content: processedContent,
-    rawMarkdown: fileContents,
-  };
-}
-
-// Save single page data back to files
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function savePageData(slug: string, frontmatter: Record<string, any>, content: string): boolean {
-  const manifest = getManifest();
-  const pageIndex = manifest.pages.findIndex((p) => p.slug === slug);
-  if (pageIndex === -1) return false;
-
-  const pageMeta = manifest.pages[pageIndex];
-  const fullPath = path.join(OUTPUT_DIR, pageMeta.contentFile);
-
-  // Revert content image URLs back to standard `./assets/` markdown style
-  const revertedContent = revertMarkdownImages(content, slug);
-
-  // Build markdown structure with gray-matter stringify
-  const newFileContent = matter.stringify(revertedContent, frontmatter);
-
-  fs.writeFileSync(fullPath, newFileContent, "utf8");
-
-  // Update title in manifest if it changed in frontmatter
-  if (frontmatter.title && frontmatter.title !== pageMeta.title) {
-    manifest.pages[pageIndex].title = frontmatter.title;
-    saveManifest(manifest);
-  }
-
-  return true;
-}
-
-// Helper to scan files directly in a page's assets directory
-export function getPageAssets(slug: string): string[] {
-  const manifest = getManifest();
-  const pageMeta = manifest.pages.find((p) => p.slug === slug);
-  if (!pageMeta) return [];
-
-  const assetsFullPath = path.join(OUTPUT_DIR, pageMeta.assetsDir);
-  if (!fs.existsSync(assetsFullPath)) return [];
-
+export async function getPageBySlug(slug: string): Promise<PageData | null> {
   try {
-    const files = fs.readdirSync(assetsFullPath);
-    return files
-      .filter((file) => /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file))
-      .map((file) => `/content/${slug}/assets/${file}`);
+    await connectToDatabase();
+    const page = await Page.findOne({ slug }).lean() as any;
+    if (!page) return null;
+
+    const imageCount = (page.content.match(/\!\[.*?\]\(.*?\)/g) || []).length;
+
+    return {
+      slug: page.slug,
+      title: page.title || page.frontmatter?.title || page.slug,
+      url: `/${page.slug === "home" ? "" : page.slug}`,
+      contentFile: `output/content/${page.slug}/index.md`,
+      assetsDir: `output/content/${page.slug}/assets`,
+      imageCount,
+      frontmatter: page.frontmatter || {},
+      content: page.content || "",
+      rawMarkdown: "",
+    };
   } catch (error) {
-    console.error("Failed to read assets directory:", error);
-    return [];
+    console.error(`Failed to fetch page ${slug} from DB:`, error);
+    return null;
   }
+}
+
+// Save single page data back to database
+export async function savePageData(
+  slug: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  frontmatter: Record<string, any>,
+  content: string
+): Promise<boolean> {
+  try {
+    await connectToDatabase();
+    const title = frontmatter.title || slug;
+    const description = frontmatter.description || "";
+
+    const result = await Page.findOneAndUpdate(
+      { slug },
+      {
+        $set: {
+          title,
+          description,
+          frontmatter,
+          content,
+        },
+      },
+      { upsert: true, new: true }
+    );
+
+    return !!result;
+  } catch (error) {
+    console.error(`Failed to save page ${slug} to DB:`, error);
+    return false;
+  }
+}
+
+// Helper to scan files in a page's assets directory (empty for DB-first mode)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function getPageAssets(slug: string): Promise<string[]> {
+  return [];
 }

@@ -4,18 +4,18 @@ import { getPageBySlug } from "@/lib/content";
 import { Award, Film, PlayCircle, BookOpen, Tv, ArrowRight } from "lucide-react";
 
 export default async function HomePage() {
-  const pageData = getPageBySlug("home");
+  const pageData = await getPageBySlug("home");
   if (!pageData) {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
         <h1 className="text-2xl font-bold text-red-500">Error loading homepage content.</h1>
-        <p className="text-white/60 mt-2">Please ensure output/content/home/index.md exists.</p>
+        <p className="text-white/60 mt-2">Could not load the home page document from the database.</p>
       </div>
     );
   }
 
-  // Define structured film data for quick display
-  const notableFilms = [
+  // Define dynamic/fallback structured film data for quick display
+  const notableFilms = pageData.frontmatter.notableFilms || [
     {
       title: "The Fragrance (আতর)",
       description: "Based on the tragic burning of Feni madrasah student Nusrath Jahan Rafi. Focuses on social justice, peace, and human rights.",
@@ -146,7 +146,7 @@ export default async function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {notableFilms.map((film, index) => (
+          {notableFilms.map((film: any, index: number) => (
             <div key={index} className="glass-card overflow-hidden flex flex-col group border border-white/5">
               <div className="relative aspect-video w-full overflow-hidden bg-zinc-900">
                 <img
