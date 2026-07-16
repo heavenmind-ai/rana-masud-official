@@ -221,13 +221,13 @@ export default async function HomePage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {notableFilms.map((film: any, index: number) => (
             <div key={index} className="glass-card overflow-hidden flex flex-col group border border-white/5">
-              <div className="relative aspect-video w-full overflow-hidden bg-zinc-900">
+              <div className="relative w-full overflow-hidden bg-zinc-950/40 flex items-center justify-center border-b border-white/5">
                 <img
                   src={film.image}
                   alt={film.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-90 pointer-events-none" />
               </div>
               <div className="p-6 flex-1 flex flex-col justify-between gap-4">
                 <div className="flex flex-col gap-2">
