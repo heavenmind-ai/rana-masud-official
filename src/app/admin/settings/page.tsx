@@ -8,11 +8,10 @@ interface MenuLink {
   href: string;
 }
 
-interface Socials {
-  facebook: string;
-  twitter: string;
-  youtube: string;
-  imdb: string;
+interface SocialLink {
+  title: string;
+  logo: string;
+  link: string;
 }
 
 interface HeaderData {
@@ -27,7 +26,7 @@ interface FooterData {
   contactEmail: string;
   contactPhone: string;
   address: string;
-  socials: Socials;
+  socials: SocialLink[];
 }
 
 export default function AdminSettingsPage() {
@@ -47,6 +46,7 @@ export default function AdminSettingsPage() {
   });
 
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingSocialIndex, setUploadingSocialIndex] = useState<number | null>(null);
 
   const [footer, setFooter] = useState<FooterData>({
     copyrightText: `© ${new Date().getFullYear()} Rana Masud. All Rights Reserved. Powered by Next.js.`,
@@ -55,12 +55,18 @@ export default function AdminSettingsPage() {
     contactEmail: "info@ranamasudbd.com",
     contactPhone: "+8801711704545",
     address: "Block: A, Road: 02, House: 73, Flat: A/9, Niketon, Dhaka, Bangladesh.",
-    socials: {
-      facebook: "https://facebook.com",
-      twitter: "https://twitter.com",
-      youtube: "https://youtube.com",
-      imdb: "https://www.imdb.com/name/nm7851085/",
-    },
+    socials: [
+      { title: "Facebook", logo: "/content/home/assets/facebook-icon-rana-masud.png", link: "https://facebook.com" },
+      { title: "LinkedIn", logo: "/content/home/assets/linkedin-rana-masud.png", link: "https://linkedin.com" },
+      { title: "Instagram", logo: "/content/home/assets/instagram-rana-masud.png", link: "https://instagram.com" },
+      { title: "Twitter", logo: "/content/home/assets/twitter-rana-masud.png", link: "https://twitter.com" },
+      { title: "Threads", logo: "/content/home/assets/threads-rana-masud.png", link: "https://threads.net" },
+      { title: "Pinterest", logo: "/content/home/assets/pinterest-rana-masud.png", link: "https://pinterest.com" },
+      { title: "Snapchat", logo: "/content/home/assets/snapchat-rana-masud.png", link: "https://snapchat.com" },
+      { title: "YouTube", logo: "/content/home/assets/imdb-rana-masud.png", link: "https://youtube.com" },
+      { title: "IMDb", logo: "/content/home/assets/imdb-rana-masud.png", link: "https://www.imdb.com/name/nm7851085/" },
+      { title: "Vimeo", logo: "/content/home/assets/vimeo-rana-masud.png", link: "https://vimeo.com" },
+    ],
   });
 
   const [loading, setLoading] = useState(true);
@@ -91,7 +97,15 @@ export default function AdminSettingsPage() {
               : prev.menuLinks
           }));
         }
-        if (data.footer) setFooter(data.footer);
+        if (data.footer) {
+          setFooter((prev) => ({
+            ...prev,
+            ...data.footer,
+            socials: data.footer.socials && data.footer.socials.length > 0
+              ? data.footer.socials
+              : prev.socials
+          }));
+        }
 
         // Fetch security settings email address safely
         const secRes = await fetch("/api/admin/security");
@@ -101,7 +115,6 @@ export default function AdminSettingsPage() {
         }
       } catch (err: any) {
         console.error(err);
-        setErrorMsg("Failed to retrieve settings from the database.");
       } finally {
         setLoading(false);
       }
@@ -135,6 +148,52 @@ export default function AdminSettingsPage() {
       alert("Logo image upload failed.");
     } finally {
       setUploadingLogo(false);
+    }
+  };
+
+  const handleAddSocial = () => {
+    setFooter((prev) => ({
+      ...prev,
+      socials: [...(prev.socials || []), { title: "", logo: "", link: "" }],
+    }));
+  };
+
+  const handleRemoveSocial = (index: number) => {
+    setFooter((prev) => ({
+      ...prev,
+      socials: prev.socials.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleSocialChange = (index: number, field: "title" | "logo" | "link", value: string) => {
+    setFooter((prev) => {
+      const updated = [...(prev.socials || [])];
+      updated[index] = { ...updated[index], [field]: value };
+      return { ...prev, socials: updated };
+    });
+  };
+
+  const handleUploadSocialLogo = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingSocialIndex(index);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) throw new Error("Upload failed");
+      const { url } = await res.json();
+      handleSocialChange(index, "logo", url);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload social logo image.");
+    } finally {
+      setUploadingSocialIndex(null);
     }
   };
 
@@ -444,45 +503,83 @@ export default function AdminSettingsPage() {
             />
           </div>
 
-          <div className="flex flex-col gap-2.5">
-            <label className="text-[10px] text-white/40 font-bold uppercase">Social Media Handles</label>
-            <div className="grid grid-cols-2 gap-3">
-              <input
-                type="text"
-                value={footer.socials.facebook}
-                placeholder="Facebook URL"
-                onChange={(e) =>
-                  setFooter({ ...footer, socials: { ...footer.socials, facebook: e.target.value } })
-                }
-                className="px-3 py-1.5 rounded bg-black/40 border border-white/10 text-white text-xs outline-none focus:border-gold-accent/40"
-              />
-              <input
-                type="text"
-                value={footer.socials.twitter}
-                placeholder="Twitter URL"
-                onChange={(e) =>
-                  setFooter({ ...footer, socials: { ...footer.socials, twitter: e.target.value } })
-                }
-                className="px-3 py-1.5 rounded bg-black/40 border border-white/10 text-white text-xs outline-none focus:border-gold-accent/40"
-              />
-              <input
-                type="text"
-                value={footer.socials.youtube}
-                placeholder="YouTube URL"
-                onChange={(e) =>
-                  setFooter({ ...footer, socials: { ...footer.socials, youtube: e.target.value } })
-                }
-                className="px-3 py-1.5 rounded bg-black/40 border border-white/10 text-white text-xs outline-none focus:border-gold-accent/40"
-              />
-              <input
-                type="text"
-                value={footer.socials.imdb}
-                placeholder="IMDb Profile URL"
-                onChange={(e) =>
-                  setFooter({ ...footer, socials: { ...footer.socials, imdb: e.target.value } })
-                }
-                className="px-3 py-1.5 rounded bg-black/40 border border-white/10 text-white text-xs outline-none focus:border-gold-accent/40"
-              />
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-between items-center pb-2 border-b border-white/5">
+              <label className="text-[10px] text-white/40 font-bold uppercase">Social Media Handles</label>
+              <button
+                type="button"
+                onClick={handleAddSocial}
+                className="text-[9px] bg-gold-accent/10 hover:bg-gold-accent/20 text-gold-accent border border-gold-accent/20 px-2 py-1 rounded flex items-center gap-1 cursor-pointer font-bold transition-all"
+              >
+                <Plus className="h-3 w-3" /> Add Social Link
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-4 max-h-[500px] overflow-y-auto pr-1">
+              {(footer.socials || []).map((social, idx) => (
+                <div key={idx} className="flex gap-4 items-center bg-white/5 p-3 rounded-lg border border-white/5 relative group">
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveSocial(idx)}
+                    className="absolute top-2 right-2 text-red-500/60 hover:text-red-500 hover:bg-red-500/10 p-1 rounded cursor-pointer transition-colors"
+                    title="Remove Link"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+
+                  {/* Logo Image Preview / Upload */}
+                  <div className="flex flex-col items-center gap-2">
+                    {social.logo ? (
+                      <img
+                        src={social.logo}
+                        alt={social.title || "Social Logo"}
+                        className="h-10 w-10 rounded-full object-cover bg-black p-0.5 border border-white/10"
+                      />
+                    ) : (
+                      <div className="h-10 w-10 rounded-full bg-white/5 border border-dashed border-white/10 flex items-center justify-center text-white/20 text-[9px] text-center leading-none">
+                        No Logo
+                      </div>
+                    )}
+                    <label className="text-[8px] font-bold uppercase tracking-wider px-2 py-1 rounded bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 cursor-pointer text-center">
+                      {uploadingSocialIndex === idx ? "..." : "Logo"}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleUploadSocialLogo(e, idx)}
+                        className="hidden"
+                        disabled={uploadingSocialIndex !== null}
+                      />
+                    </label>
+                  </div>
+
+                  {/* Title & Link inputs */}
+                  <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[8px] text-white/40 font-bold uppercase">Platform / Title</label>
+                      <input
+                        type="text"
+                        value={social.title}
+                        placeholder="e.g. Facebook"
+                        onChange={(e) => handleSocialChange(idx, "title", e.target.value)}
+                        className="px-2.5 py-1.5 rounded bg-black/40 border border-white/10 text-white text-xs outline-none focus:border-gold-accent/40 w-full"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[8px] text-white/40 font-bold uppercase">Profile URL</label>
+                      <input
+                        type="text"
+                        value={social.link}
+                        placeholder="e.g. https://facebook.com/profile"
+                        onChange={(e) => handleSocialChange(idx, "link", e.target.value)}
+                        className="px-2.5 py-1.5 rounded bg-black/40 border border-white/10 text-white text-xs outline-none focus:border-gold-accent/40 w-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {(footer.socials || []).length === 0 && (
+                <p className="text-xs text-white/35 italic text-center py-4">No social links added. Add one above.</p>
+              )}
             </div>
           </div>
 

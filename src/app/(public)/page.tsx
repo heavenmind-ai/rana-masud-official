@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getPageBySlug } from "@/lib/content";
 import { Award, Film, PlayCircle, BookOpen, Tv, ArrowRight } from "lucide-react";
 import HeroBackgroundSlider from "@/components/HeroBackgroundSlider";
+import ClientsMarquee from "@/components/ClientsMarquee";
 
 export default async function HomePage() {
   const pageData = await getPageBySlug("home");
@@ -16,6 +17,38 @@ export default async function HomePage() {
       </div>
     );
   }
+
+  // Default client logos fallback list
+  const clientLogos = pageData.frontmatter.clientLogos || [
+    "/content/home/assets/alibaba-door-rana-masud-1.png",
+    "/content/home/assets/apollo-hospital-dhaka-rana-masud.png",
+    "/content/home/assets/arong-rana-masud-1.png",
+    "/content/home/assets/baby-zinc-rana-masud.png",
+    "/content/home/assets/banglalink-rana-masud.png",
+    "/content/home/assets/bccp-rana-masud.png",
+    "/content/home/assets/bexi-fabrics-rana-masud.png",
+    "/content/home/assets/comfort-sea-star-rana-masud.png",
+    "/content/home/assets/danish-rana-masud.png",
+    "/content/home/assets/egp-rana-masud.png",
+    "/content/home/assets/fresh-rana-masud.png",
+    "/content/home/assets/infinity-rana-masud.png",
+    "/content/home/assets/islami-bank-rana-masud.png",
+    "/content/home/assets/meena-bazar-rana-masud.png",
+    "/content/home/assets/modhumoti-bank-rana-masud.png",
+    "/content/home/assets/monalica-tiles-rana-masud.png",
+    "/content/home/assets/mutual-trust-bank-rana-masud.png",
+    "/content/home/assets/orion-rana-masud.png",
+    "/content/home/assets/partex-group-rana-masud.png",
+    "/content/home/assets/rc-cola-rana-masud.png",
+    "/content/home/assets/ruchi-rana-masud.png",
+    "/content/home/assets/runner-rana-masud.png",
+    "/content/home/assets/shahjalal-rana-masud.png",
+    "/content/home/assets/skb-rana-masud.png",
+    "/content/home/assets/smc-rana-masud.png",
+    "/content/home/assets/star-bond-rana-masud.png",
+    "/content/home/assets/world-bank-_-rana-masud.png",
+    "/content/home/assets/zam-zam-tower-rana-masud.png"
+  ];
 
   // Notable Films list
   const notableFilms = pageData.frontmatter.notableFilms || [
@@ -208,6 +241,9 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* Our Clients Section */}
+      <ClientsMarquee logos={clientLogos} />
     </div>
   );
 }

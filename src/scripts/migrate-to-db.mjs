@@ -275,12 +275,18 @@ async function migrate() {
       contactEmail: "info@ranamasudbd.com",
       contactPhone: "+8801711704545",
       address: "Block: A, Road: 02, House: 73, Flat: A/9, Niketon, Dhaka, Bangladesh.",
-      socials: {
-        facebook: "https://facebook.com",
-        twitter: "https://twitter.com",
-        youtube: "https://youtube.com",
-        imdb: "https://www.imdb.com/name/nm7851085/",
-      },
+      socials: [
+        { title: "Facebook", logo: "/content/home/assets/facebook-icon-rana-masud.png", link: "https://facebook.com" },
+        { title: "LinkedIn", logo: "/content/home/assets/linkedin-rana-masud.png", link: "https://linkedin.com" },
+        { title: "Instagram", logo: "/content/home/assets/instagram-rana-masud.png", link: "https://instagram.com" },
+        { title: "Twitter", logo: "/content/home/assets/twitter-rana-masud.png", link: "https://twitter.com" },
+        { title: "Threads", logo: "/content/home/assets/threads-rana-masud.png", link: "https://threads.net" },
+        { title: "Pinterest", logo: "/content/home/assets/pinterest-rana-masud.png", link: "https://pinterest.com" },
+        { title: "Snapchat", logo: "/content/home/assets/snapchat-rana-masud.png", link: "https://snapchat.com" },
+        { title: "YouTube", logo: "/content/home/assets/imdb-rana-masud.png", link: "https://youtube.com" },
+        { title: "IMDb", logo: "/content/home/assets/imdb-rana-masud.png", link: "https://www.imdb.com/name/nm7851085/" },
+        { title: "Vimeo", logo: "/content/home/assets/vimeo-rana-masud.png", link: "https://vimeo.com" },
+      ],
     };
 
     await GlobalSettings.findOneAndUpdate(

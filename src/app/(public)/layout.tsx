@@ -26,12 +26,18 @@ const defaultFooter = {
   copyrightText: `© ${new Date().getFullYear()} Rana Masud. All Rights Reserved. Powered by Next.js.`,
   brandName: "RANA MASUD",
   brandSubtitle: "Film Director • Producer • Teacher",
-  socials: {
-    facebook: "https://facebook.com",
-    twitter: "https://twitter.com",
-    youtube: "https://youtube.com",
-    imdb: "https://www.imdb.com/name/nm7851085/",
-  },
+  socials: [
+    { title: "Facebook", logo: "/content/home/assets/facebook-icon-rana-masud.png", link: "https://facebook.com" },
+    { title: "LinkedIn", logo: "/content/home/assets/linkedin-rana-masud.png", link: "https://linkedin.com" },
+    { title: "Instagram", logo: "/content/home/assets/instagram-rana-masud.png", link: "https://instagram.com" },
+    { title: "Twitter", logo: "/content/home/assets/twitter-rana-masud.png", link: "https://twitter.com" },
+    { title: "Threads", logo: "/content/home/assets/threads-rana-masud.png", link: "https://threads.net" },
+    { title: "Pinterest", logo: "/content/home/assets/pinterest-rana-masud.png", link: "https://pinterest.com" },
+    { title: "Snapchat", logo: "/content/home/assets/snapchat-rana-masud.png", link: "https://snapchat.com" },
+    { title: "YouTube", logo: "/content/home/assets/imdb-rana-masud.png", link: "https://youtube.com" },
+    { title: "IMDb", logo: "/content/home/assets/imdb-rana-masud.png", link: "https://www.imdb.com/name/nm7851085/" },
+    { title: "Vimeo", logo: "/content/home/assets/vimeo-rana-masud.png", link: "https://vimeo.com" },
+  ],
 };
 
 async function getHeaderFooterSettings() {
@@ -46,6 +52,11 @@ async function getHeaderFooterSettings() {
     // Bulletproof fallback: if menuLinks is empty or missing in database, restore default links
     if (!header.menuLinks || header.menuLinks.length === 0) {
       header.menuLinks = defaultHeader.menuLinks;
+    }
+
+    // Bulletproof fallback: if socials is missing, empty, or not an array, use default list
+    if (!footer.socials || !Array.isArray(footer.socials) || footer.socials.length === 0) {
+      footer.socials = defaultFooter.socials;
     }
 
     return { header, footer };
@@ -165,52 +176,32 @@ export default async function PublicLayout({
           <div className="text-xs text-white/40 text-center">
             {footer.copyrightText}
           </div>
-          <div className="flex items-center gap-4 text-xs">
+          <div className="flex items-center gap-3">
             {/* Socials */}
-            {footer.socials?.facebook && (
-              <a
-                href={footer.socials.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white/40 hover:text-gold-accent transition-colors"
-                title="Facebook"
-              >
-                <Facebook className="h-4 w-4" />
-              </a>
-            )}
-            {footer.socials?.twitter && (
-              <a
-                href={footer.socials.twitter}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white/40 hover:text-gold-accent transition-colors"
-                title="Twitter"
-              >
-                <Twitter className="h-4 w-4" />
-              </a>
-            )}
-            {footer.socials?.youtube && (
-              <a
-                href={footer.socials.youtube}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white/40 hover:text-gold-accent transition-colors"
-                title="YouTube"
-              >
-                <Youtube className="h-4 w-4" />
-              </a>
-            )}
-            {footer.socials?.imdb && (
-              <a
-                href={footer.socials.imdb}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white/40 hover:text-gold-accent transition-colors"
-                title="IMDb Profile"
-              >
-                <LinkIcon className="h-4 w-4" />
-              </a>
-            )}
+            {(footer.socials || []).map((social: any, idx: number) => (
+              social.link && (
+                <a
+                  key={idx}
+                  href={social.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:opacity-80 transition-opacity shrink-0"
+                  title={social.title}
+                >
+                  {social.logo ? (
+                    <img
+                      src={social.logo}
+                      alt={social.title || "Social Logo"}
+                      className="h-7 w-7 rounded-full object-cover bg-black/40 border border-white/10"
+                    />
+                  ) : (
+                    <span className="text-[10px] text-white/60 bg-white/5 border border-white/10 px-2 py-1 rounded-full uppercase tracking-wider font-bold">
+                      {social.title}
+                    </span>
+                  )}
+                </a>
+              )
+            ))}
           </div>
         </div>
       </footer>
