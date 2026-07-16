@@ -148,6 +148,100 @@ export default function AdminHomePageEditor() {
     }
   };
 
+  const handleAddLaurel = () => {
+    setFrontmatter((prev: any) => ({
+      ...prev,
+      festivalLaurels: [...(prev.festivalLaurels || []), ""],
+    }));
+  };
+
+  const handleRemoveLaurel = (index: number) => {
+    setFrontmatter((prev: any) => ({
+      ...prev,
+      festivalLaurels: (prev.festivalLaurels || []).filter((_: any, i: number) => i !== index),
+    }));
+  };
+
+  const handleLaurelChange = (index: number, value: string) => {
+    setFrontmatter((prev: any) => {
+      const updated = [...(prev.festivalLaurels || [])];
+      updated[index] = value;
+      return { ...prev, festivalLaurels: updated };
+    });
+  };
+
+  const handleUploadLaurel = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingField(`laurel-${index}`);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Upload failed");
+      const { url } = await res.json();
+      handleLaurelChange(index, url);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload laurel image.");
+    } finally {
+      setUploadingField(null);
+    }
+  };
+
+  const handleAddClientLogo = () => {
+    setFrontmatter((prev: any) => ({
+      ...prev,
+      clientLogos: [...(prev.clientLogos || []), ""],
+    }));
+  };
+
+  const handleRemoveClientLogo = (index: number) => {
+    setFrontmatter((prev: any) => ({
+      ...prev,
+      clientLogos: (prev.clientLogos || []).filter((_: any, i: number) => i !== index),
+    }));
+  };
+
+  const handleClientLogoChange = (index: number, value: string) => {
+    setFrontmatter((prev: any) => {
+      const updated = [...(prev.clientLogos || [])];
+      updated[index] = value;
+      return { ...prev, clientLogos: updated };
+    });
+  };
+
+  const handleUploadClientLogo = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingField(`clientLogo-${index}`);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Upload failed");
+      const { url } = await res.json();
+      handleClientLogoChange(index, url);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload client logo image.");
+    } finally {
+      setUploadingField(null);
+    }
+  };
+
   const handleSave = async () => {
     setSaveStatus("saving");
     try {
@@ -696,6 +790,126 @@ export default function AdminHomePageEditor() {
               ))}
               {(frontmatter.heroSliderImages || []).length === 0 && (
                 <p className="text-xs text-white/35 italic text-center py-4">No slider images uploaded. Default cinematic background will be used.</p>
+              )}
+            </div>
+          </div>
+
+          {/* Festival Laurels Card */}
+          <div className="glass-card p-6 flex flex-col gap-4 border border-white/10">
+            <div className="flex justify-between items-center pb-2 border-b border-white/5">
+              <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest">Festival Laurels</h3>
+              <button
+                type="button"
+                onClick={handleAddLaurel}
+                className="text-[10px] bg-gold-accent/10 hover:bg-gold-accent/20 text-gold-accent border border-gold-accent/20 px-2 py-1 rounded flex items-center gap-1 cursor-pointer font-bold uppercase tracking-wider transition-colors"
+              >
+                <Plus className="h-3 w-3" /> Add Laurel
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-3 max-h-[300px] overflow-y-auto pr-1">
+              {(frontmatter.festivalLaurels || []).map((imgUrl: string, idx: number) => (
+                <div key={idx} className="flex gap-3 items-center bg-white/5 p-3 rounded-lg border border-white/5 relative">
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveLaurel(idx)}
+                    className="absolute top-2 right-2 text-red-500/60 hover:text-red-500 hover:bg-red-500/10 p-1 rounded cursor-pointer transition-colors"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+
+                  <div className="flex flex-col gap-2 w-full pt-2">
+                    <label className="text-[9px] text-white/40 font-bold uppercase">Laurel Image {idx + 1}</label>
+                    <div className="flex items-center gap-3">
+                      {imgUrl ? (
+                        <img
+                          src={imgUrl}
+                          alt={`Laurel Preview ${idx + 1}`}
+                          className="h-10 w-16 object-contain bg-black/40 rounded border border-white/10"
+                        />
+                      ) : (
+                        <div className="h-10 w-16 bg-black/40 rounded border border-dashed border-white/10 flex items-center justify-center text-white/20 text-[10px]">
+                          No image
+                        </div>
+                      )}
+
+                      <label className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded bg-white/5 hover:bg-white/10 border border-white/10 text-white text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-colors">
+                        <ImageIcon className="h-3.5 w-3.5 text-white/60" />
+                        <span>{uploadingField === `laurel-${idx}` ? "Uploading..." : "Upload Image"}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleUploadLaurel(e, idx)}
+                          className="hidden"
+                          disabled={uploadingField !== null}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {(frontmatter.festivalLaurels || []).length === 0 && (
+                <p className="text-xs text-white/35 italic text-center py-4">No laurels uploaded.</p>
+              )}
+            </div>
+          </div>
+
+          {/* Client Logos Card */}
+          <div className="glass-card p-6 flex flex-col gap-4 border border-white/10">
+            <div className="flex justify-between items-center pb-2 border-b border-white/5">
+              <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest">Client Logos</h3>
+              <button
+                type="button"
+                onClick={handleAddClientLogo}
+                className="text-[10px] bg-gold-accent/10 hover:bg-gold-accent/20 text-gold-accent border border-gold-accent/20 px-2 py-1 rounded flex items-center gap-1 cursor-pointer font-bold uppercase tracking-wider transition-colors"
+              >
+                <Plus className="h-3 w-3" /> Add Logo
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-3 max-h-[300px] overflow-y-auto pr-1">
+              {(frontmatter.clientLogos || []).map((imgUrl: string, idx: number) => (
+                <div key={idx} className="flex gap-3 items-center bg-white/5 p-3 rounded-lg border border-white/5 relative">
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveClientLogo(idx)}
+                    className="absolute top-2 right-2 text-red-500/60 hover:text-red-500 hover:bg-red-500/10 p-1 rounded cursor-pointer transition-colors"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+
+                  <div className="flex flex-col gap-2 w-full pt-2">
+                    <label className="text-[9px] text-white/40 font-bold uppercase">Client Logo {idx + 1}</label>
+                    <div className="flex items-center gap-3">
+                      {imgUrl ? (
+                        <img
+                          src={imgUrl}
+                          alt={`Client Logo Preview ${idx + 1}`}
+                          className="h-10 w-16 object-contain bg-black/40 rounded border border-white/10"
+                        />
+                      ) : (
+                        <div className="h-10 w-16 bg-black/40 rounded border border-dashed border-white/10 flex items-center justify-center text-white/20 text-[10px]">
+                          No image
+                        </div>
+                      )}
+
+                      <label className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded bg-white/5 hover:bg-white/10 border border-white/10 text-white text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-colors">
+                        <ImageIcon className="h-3.5 w-3.5 text-white/60" />
+                        <span>{uploadingField === `clientLogo-${idx}` ? "Uploading..." : "Upload Image"}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleUploadClientLogo(e, idx)}
+                          className="hidden"
+                          disabled={uploadingField !== null}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {(frontmatter.clientLogos || []).length === 0 && (
+                <p className="text-xs text-white/35 italic text-center py-4">No client logos uploaded.</p>
               )}
             </div>
           </div>

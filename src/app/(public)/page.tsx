@@ -15,6 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 import HeroBackgroundSlider from "@/components/HeroBackgroundSlider";
 import ClientsMarquee from "@/components/ClientsMarquee";
+import LaurelsMarquee from "@/components/LaurelsMarquee";
 
 export default async function HomePage() {
   const pageData = await getPageBySlug("home");
@@ -26,6 +27,8 @@ export default async function HomePage() {
       </div>
     );
   }
+
+  const festivalLaurels = pageData.frontmatter.festivalLaurels || [];
 
   // Default client logos fallback list
   const clientLogos = pageData.frontmatter.clientLogos || [
@@ -250,6 +253,9 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* Festival Laurels Section */}
+      <LaurelsMarquee laurels={festivalLaurels} />
 
       {/* Our Clients Section */}
       <ClientsMarquee logos={clientLogos} />
