@@ -155,6 +155,7 @@ export default async function HomePage() {
               <img
                 src={pageData.frontmatter.heroProfileImage || "/content/home/assets/rana-masud-Profile.png"}
                 alt="Rana Masud Profile"
+                loading="eager"
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               {/* Glass Info Card Overlay */}

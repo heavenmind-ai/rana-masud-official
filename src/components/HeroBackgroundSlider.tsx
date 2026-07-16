@@ -16,15 +16,16 @@ export default function HeroBackgroundSlider({ images }: { images: string[] }) {
   if (!images || images.length === 0) return null;
 
   return (
-    <div className="absolute inset-0 z-0 overflow-hidden">
+    <div className="absolute inset-0 z-0 overflow-hidden bg-black">
       {images.map((img, idx) => (
-        <div
+        <img
           key={idx}
-          className={`absolute inset-0 bg-cover bg-center transition-all duration-[1500ms] ease-in-out transform ${idx === currentIndex ? "opacity-60 scale-100" : "opacity-0 scale-[1.03]"
-            }`}
-          style={{
-            backgroundImage: `url(${img})`,
-          }}
+          src={img}
+          alt={`Cinematic Hero Slide ${idx + 1}`}
+          loading="eager"
+          className={`absolute inset-0 w-full h-full object-cover transition-all duration-[1500ms] ease-in-out transform ${
+            idx === currentIndex ? "opacity-60 scale-100" : "opacity-0 scale-[1.03]"
+          }`}
         />
       ))}
       {/* Cinematic dark overlay gradient for readability */}

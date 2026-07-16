@@ -6,6 +6,7 @@ import { Settings, Facebook, Twitter, Youtube, Link as LinkIcon, ChevronDown } f
 import { connectToDatabase } from "@/lib/mongodb";
 import { GlobalSettings } from "@/models/GlobalSettings";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
+import Header from "@/components/Header";
 
 // Fallback configurations if DB is empty or disconnected
 const defaultHeader = {
@@ -85,35 +86,7 @@ export default async function PublicLayout({
         <AnalyticsTracker />
       </Suspense>
       {/* Cinematic Navigation Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#09090b]/85 backdrop-blur-md">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link
-            href="/"
-            className="flex items-center hover:opacity-80 transition-opacity shrink-0"
-          >
-            {header.logoImage && (
-              <img
-                src={header.logoImage}
-                alt="Rana Masud"
-                className="h-10 w-auto object-contain"
-              />
-            )}
-          </Link>
-
-          {/* Dynamic Flat Nav Links, Bold, with Tighter Spacing */}
-          <nav className="hidden md:flex items-center gap-4 text-[13px] font-bold">
-            {header.menuLinks.map((link: any, idx: number) => (
-              <Link
-                key={idx}
-                href={link.href}
-                className="hover:text-gold-accent transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-      </header>
+      <Header header={header} />
 
       {/* Main Page Area */}
       <main className="flex-1">{children}</main>
