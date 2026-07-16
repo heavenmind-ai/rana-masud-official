@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import SEOControl from "@/components/SEOControl";
 import {
   Save,
   Plus,
@@ -99,6 +100,10 @@ export default function AdminBiographyPageEditor() {
   const [loading, setLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
   const [uploadingImageIndex, setUploadingImageIndex] = useState<number | null>(null);
+  const [seoTitle, setSeoTitle] = useState("");
+  const [seoDescription, setSeoDescription] = useState("");
+  const [seoKeywords, setSeoKeywords] = useState("");
+  const [seoOgImage, setSeoOgImage] = useState("");
 
   useEffect(() => {
     async function fetchBiography() {
@@ -148,7 +153,10 @@ export default function AdminBiographyPageEditor() {
         setSocialFilms(fm.notableWork?.socialFilms || []);
         setAdFilms(fm.notableWork?.adFilms || []);
         setFilms(fm.notableWork?.films || []);
-
+        setSeoTitle(fm.seoTitle || "");
+        setSeoDescription(fm.seoDescription || "");
+        setSeoKeywords(fm.seoKeywords || "");
+        setSeoOgImage(fm.seoOgImage || "");
       } catch (error) {
         console.error("Failed to load biography data:", error);
       } finally {
@@ -213,6 +221,10 @@ export default function AdminBiographyPageEditor() {
           adFilms,
           films,
         },
+        seoTitle,
+        seoDescription,
+        seoKeywords,
+        seoOgImage,
       };
 
       const res = await fetch("/api/pages/biography-rana_masud_film_director", {
@@ -363,7 +375,8 @@ export default function AdminBiographyPageEditor() {
       </div>
 
       {/* Tab Contents */}
-      <div className="mt-4 flex flex-col gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-4">
+        <div className="lg:col-span-8 flex flex-col gap-6">
         
         {/* Tab 1: Cards & About */}
         {activeTab === "about" && (
@@ -1079,6 +1092,21 @@ export default function AdminBiographyPageEditor() {
           </div>
         )}
 
+        </div>
+
+        {/* Right column - SEO configuration */}
+        <div className="lg:col-span-4 flex flex-col gap-6">
+          <SEOControl
+            seoTitle={seoTitle}
+            setSeoTitle={setSeoTitle}
+            seoDescription={seoDescription}
+            setSeoDescription={setSeoDescription}
+            seoKeywords={seoKeywords}
+            setSeoKeywords={setSeoKeywords}
+            seoOgImage={seoOgImage}
+            setSeoOgImage={setSeoOgImage}
+          />
+        </div>
       </div>
     </div>
   );

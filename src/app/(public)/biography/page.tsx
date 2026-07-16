@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import React from "react";
-import { getPageBySlug } from "@/lib/content";
+import { getPageBySlug, generatePageMetadata } from "@/lib/content";
 import {
   Briefcase,
   Award,
@@ -13,6 +13,15 @@ import {
   ExternalLink,
 } from "lucide-react";
 import * as icons from "lucide-react";
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return generatePageMetadata(
+    "biography-rana_masud_film_director",
+    "Biography & Career | Rana Masud",
+    "Read the professional biography and career timeline of filmmaker, producer, and film teacher Rana Masud."
+  );
+}
 
 // Default seed values from screenshots
 const defaultRoleCards = [

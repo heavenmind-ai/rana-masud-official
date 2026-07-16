@@ -1,8 +1,17 @@
 export const dynamic = "force-dynamic";
 
 import React from "react";
-import { getPageBySlug } from "@/lib/content";
+import { getPageBySlug, generatePageMetadata } from "@/lib/content";
 import { Compass, Globe, MapPin } from "lucide-react";
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return generatePageMetadata(
+    "film-festivals",
+    "Screenings & Festivals | Rana Masud",
+    "List of national and international film festivals and screenings of Rana Masud's films globally."
+  );
+}
 
 export default async function FestivalsPage() {
   const pageData = await getPageBySlug("film-festivals");

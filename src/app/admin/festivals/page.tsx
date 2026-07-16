@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Save, Plus, Trash2, CheckCircle2, AlertCircle } from "lucide-react";
+import SEOControl from "@/components/SEOControl";
 
 interface IntlFestival {
   name: string;
@@ -26,6 +27,10 @@ export default function AdminFestivalsPageEditor() {
 
   const [loading, setLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
+  const [seoTitle, setSeoTitle] = useState("");
+  const [seoDescription, setSeoDescription] = useState("");
+  const [seoKeywords, setSeoKeywords] = useState("");
+  const [seoOgImage, setSeoOgImage] = useState("");
 
   useEffect(() => {
     async function fetchFestivals() {
@@ -43,6 +48,10 @@ export default function AdminFestivalsPageEditor() {
         setFestivalsTitle(fm.festivalsTitle || "Film Festivals");
         setIntlSectionTitle(fm.intlSectionTitle || "International Festivals");
         setNatSectionTitle(fm.natSectionTitle || "National Festivals");
+        setSeoTitle(fm.seoTitle || "");
+        setSeoDescription(fm.seoDescription || "");
+        setSeoKeywords(fm.seoKeywords || "");
+        setSeoOgImage(fm.seoOgImage || "");
       } catch (error) {
         console.error(error);
       } finally {
@@ -64,6 +73,10 @@ export default function AdminFestivalsPageEditor() {
         festivalsTitle,
         intlSectionTitle,
         natSectionTitle,
+        seoTitle,
+        seoDescription,
+        seoKeywords,
+        seoOgImage,
       };
 
       const res = await fetch("/api/pages/film-festivals", {
@@ -331,6 +344,20 @@ export default function AdminFestivalsPageEditor() {
               ))}
             </div>
           </div>
+        </div>
+
+        {/* Right column - SEO configuration */}
+        <div className="lg:col-span-4 flex flex-col gap-6">
+          <SEOControl
+            seoTitle={seoTitle}
+            setSeoTitle={setSeoTitle}
+            seoDescription={seoDescription}
+            setSeoDescription={setSeoDescription}
+            seoKeywords={seoKeywords}
+            setSeoKeywords={setSeoKeywords}
+            seoOgImage={seoOgImage}
+            setSeoOgImage={setSeoOgImage}
+          />
         </div>
       </div>
     </div>

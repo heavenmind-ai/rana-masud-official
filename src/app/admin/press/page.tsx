@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Save, Plus, Trash2, Image as ImageIcon, CheckCircle2, AlertCircle } from "lucide-react";
+import SEOControl from "@/components/SEOControl";
 
 interface PressItem {
   title: string;
@@ -22,6 +23,10 @@ export default function AdminPressPageEditor() {
   const [loading, setLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
   const [uploadingItemIdx, setUploadingItemIdx] = useState<number | null>(null);
+  const [seoTitle, setSeoTitle] = useState("");
+  const [seoDescription, setSeoDescription] = useState("");
+  const [seoKeywords, setSeoKeywords] = useState("");
+  const [seoOgImage, setSeoOgImage] = useState("");
 
   useEffect(() => {
     async function fetchPress() {
@@ -36,6 +41,10 @@ export default function AdminPressPageEditor() {
 
         setPressBadgeText(fm.pressBadgeText || "Media Presence");
         setPressTitle(fm.pressTitle || "Press & Media");
+        setSeoTitle(fm.seoTitle || "");
+        setSeoDescription(fm.seoDescription || "");
+        setSeoKeywords(fm.seoKeywords || "");
+        setSeoOgImage(fm.seoOgImage || "");
       } catch (error) {
         console.error(error);
       } finally {
@@ -84,6 +93,10 @@ export default function AdminPressPageEditor() {
         pressItems,
         pressBadgeText,
         pressTitle,
+        seoTitle,
+        seoDescription,
+        seoKeywords,
+        seoOgImage,
       };
 
       const res = await fetch("/api/pages/press", {
@@ -307,6 +320,20 @@ export default function AdminPressPageEditor() {
               ))}
             </div>
           </div>
+        </div>
+
+        {/* Right column - SEO configuration */}
+        <div className="lg:col-span-4 flex flex-col gap-6">
+          <SEOControl
+            seoTitle={seoTitle}
+            setSeoTitle={setSeoTitle}
+            seoDescription={seoDescription}
+            setSeoDescription={setSeoDescription}
+            seoKeywords={seoKeywords}
+            setSeoKeywords={setSeoKeywords}
+            seoOgImage={seoOgImage}
+            setSeoOgImage={setSeoOgImage}
+          />
         </div>
       </div>
     </div>

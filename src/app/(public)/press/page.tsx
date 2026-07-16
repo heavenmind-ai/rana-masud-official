@@ -1,8 +1,17 @@
 export const dynamic = "force-dynamic";
 
 import React from "react";
-import { getPageBySlug } from "@/lib/content";
+import { getPageBySlug, generatePageMetadata } from "@/lib/content";
 import { Newspaper, ExternalLink } from "lucide-react";
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return generatePageMetadata(
+    "press",
+    "Press & Media | Rana Masud",
+    "Read coverage, newspaper articles, interviews, and media reports featuring director Rana Masud."
+  );
+}
 
 export default async function PressPage() {
   const pageData = await getPageBySlug("press");

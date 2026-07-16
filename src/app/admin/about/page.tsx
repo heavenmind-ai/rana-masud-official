@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Save, Plus, Trash2, CheckCircle2, AlertCircle } from "lucide-react";
+import SEOControl from "@/components/SEOControl";
 
 interface PillarItem {
   title: string;
@@ -20,6 +21,11 @@ export default function AdminAboutPageEditor() {
   const [pillarsSectionTitle, setPillarsSectionTitle] = useState("");
 
   const [pillars, setPillars] = useState<PillarItem[]>([]);
+  const [seoTitle, setSeoTitle] = useState("");
+  const [seoDescription, setSeoDescription] = useState("");
+  const [seoKeywords, setSeoKeywords] = useState("");
+  const [seoOgImage, setSeoOgImage] = useState("");
+
   const [loading, setLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
 
@@ -41,6 +47,10 @@ export default function AdminAboutPageEditor() {
         setPillarsSectionTitle(fm.pillarsSectionTitle || "Core Operations");
 
         setPillars(fm.pillars || []);
+        setSeoTitle(fm.seoTitle || "");
+        setSeoDescription(fm.seoDescription || "");
+        setSeoKeywords(fm.seoKeywords || "");
+        setSeoOgImage(fm.seoOgImage || "");
       } catch (error) {
         console.error(error);
       } finally {
@@ -63,6 +73,10 @@ export default function AdminAboutPageEditor() {
         bannerSecondaryText,
         pillarsSectionTitle,
         pillars,
+        seoTitle,
+        seoDescription,
+        seoKeywords,
+        seoOgImage,
       };
 
       const res = await fetch("/api/pages/about", {
@@ -305,6 +319,17 @@ export default function AdminAboutPageEditor() {
               />
             </div>
           </div>
+
+          <SEOControl
+            seoTitle={seoTitle}
+            setSeoTitle={setSeoTitle}
+            seoDescription={seoDescription}
+            setSeoDescription={setSeoDescription}
+            seoKeywords={seoKeywords}
+            setSeoKeywords={setSeoKeywords}
+            seoOgImage={seoOgImage}
+            setSeoOgImage={setSeoOgImage}
+          />
         </div>
       </div>
     </div>

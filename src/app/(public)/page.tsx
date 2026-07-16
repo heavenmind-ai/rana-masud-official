@@ -2,8 +2,17 @@ export const dynamic = "force-dynamic";
 
 import React from "react";
 import Link from "next/link";
-import { getPageBySlug } from "@/lib/content";
+import { getPageBySlug, generatePageMetadata } from "@/lib/content";
 import { Award, Film, PlayCircle, BookOpen, Tv, ArrowRight } from "lucide-react";
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return generatePageMetadata(
+    "home",
+    "Rana Masud | Film Director, Producer & Teacher",
+    "Official portfolio site of Rana Masud - Film Director, Producer, and Teacher. Explore award-winning films, TV shows, visual gallery, and media press."
+  );
+}
 import HeroBackgroundSlider from "@/components/HeroBackgroundSlider";
 import ClientsMarquee from "@/components/ClientsMarquee";
 

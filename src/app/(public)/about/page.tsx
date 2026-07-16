@@ -1,9 +1,18 @@
 export const dynamic = "force-dynamic";
 
 import React from "react";
-import { getPageBySlug } from "@/lib/content";
+import { getPageBySlug, generatePageMetadata } from "@/lib/content";
 import { Shield, Sparkles, Film, Compass } from "lucide-react";
 import * as icons from "lucide-react";
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return generatePageMetadata(
+    "about",
+    "About Us | Ferywala Communications",
+    "Learn about Ferywala Communications, a leading audio-visual production house in Bangladesh founded by Rana Masud in 2006."
+  );
+}
 
 export default async function AboutUsPage() {
   const pageData = await getPageBySlug("about");

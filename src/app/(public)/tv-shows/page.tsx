@@ -1,6 +1,17 @@
+export const dynamic = "force-dynamic";
+
 import React from "react";
-import { getPageBySlug } from "@/lib/content";
+import { getPageBySlug, generatePageMetadata } from "@/lib/content";
 import { Tv } from "lucide-react";
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return generatePageMetadata(
+    "tv-shows",
+    "TV Shows & Broadcasts | Rana Masud",
+    "Watch talk shows, behavioral change PSAs, and television programs directed and produced by Rana Masud."
+  );
+}
 
 export default async function TvShowsPage() {
   const pageData = await getPageBySlug("tv-shows");
