@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import React from "react";
 import { getPageBySlug } from "@/lib/content";
 import { Award } from "lucide-react";
@@ -60,8 +62,12 @@ export default async function AwardsPage() {
     <div className="container mx-auto px-4 py-16 flex flex-col gap-16">
       {/* Page Header */}
       <section className="text-center max-w-3xl mx-auto">
-        <p className="text-xs font-bold text-gold-accent tracking-widest uppercase">Recognition</p>
-        <h1 className="text-4xl md:text-5xl font-bold mt-2 text-white">Film Awards</h1>
+        <p className="text-xs font-bold text-gold-accent tracking-widest uppercase">
+          {pageData.frontmatter.awardsBadgeText || "Recognition"}
+        </p>
+        <h1 className="text-4xl md:text-5xl font-bold mt-2 text-white">
+          {pageData.frontmatter.awardsTitle || "Film Awards"}
+        </h1>
         <div className="h-0.5 w-16 bg-gold-accent mx-auto mt-4" />
         <p className="text-white/60 mt-6 leading-relaxed">
           {pageData.frontmatter.headerText ||
@@ -94,10 +100,6 @@ export default async function AwardsPage() {
                 <p className="text-xs text-gold-accent mt-0.5 italic font-medium">Film: {award.film}</p>
               </div>
               <p className="text-white/60 text-sm leading-relaxed mt-2">{award.description}</p>
-            </div>
-
-            <div className="border-t border-white/5 pt-4 text-xs font-semibold text-white/30 uppercase tracking-widest mt-4">
-              Official Selection
             </div>
           </div>
         ))}

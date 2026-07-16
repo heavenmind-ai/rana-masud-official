@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import React from "react";
 import Link from "next/link";
 import { Settings, Facebook, Twitter, Youtube, Link as LinkIcon } from "lucide-react";

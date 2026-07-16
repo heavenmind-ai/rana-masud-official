@@ -12,9 +12,16 @@ interface GalleryItem {
 interface GalleryClientProps {
   galleryItems: GalleryItem[];
   headerText: string;
+  badgeText?: string;
+  titleText?: string;
 }
 
-export default function GalleryClient({ galleryItems, headerText }: GalleryClientProps) {
+export default function GalleryClient({
+  galleryItems,
+  headerText,
+  badgeText = "Visuals",
+  titleText = "Image Gallery",
+}: GalleryClientProps) {
   const [activeFilter, setActiveFilter] = useState("all");
   const [selectedImageIdx, setSelectedImageIdx] = useState<number | null>(null);
 
@@ -52,8 +59,8 @@ export default function GalleryClient({ galleryItems, headerText }: GalleryClien
     <div className="container mx-auto px-4 py-16 flex flex-col gap-12">
       {/* Page Header */}
       <section className="text-center max-w-3xl mx-auto">
-        <p className="text-xs font-bold text-gold-accent tracking-widest uppercase">Visuals</p>
-        <h1 className="text-4xl md:text-5xl font-bold mt-2 text-white">Image Gallery</h1>
+        <p className="text-xs font-bold text-gold-accent tracking-widest uppercase">{badgeText}</p>
+        <h1 className="text-4xl md:text-5xl font-bold mt-2 text-white">{titleText}</h1>
         <div className="h-0.5 w-16 bg-gold-accent mx-auto mt-4" />
         <p className="text-white/60 mt-6 leading-relaxed">{headerText}</p>
       </section>

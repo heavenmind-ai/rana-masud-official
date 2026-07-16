@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import React from "react";
 import { getPageBySlug } from "@/lib/content";
 import { Briefcase, Award, GraduationCap, Users } from "lucide-react";
@@ -77,7 +79,9 @@ export default async function BiographyPage() {
         </div>
         <div className="lg:col-span-8 flex flex-col gap-6 text-left">
           <div>
-            <p className="text-xs font-bold text-gold-accent tracking-widest uppercase">The Filmmaker</p>
+            <p className="text-xs font-bold text-gold-accent tracking-widest uppercase">
+              {pageData.frontmatter.biographyBadgeText || "The Filmmaker"}
+            </p>
             <h1 className="text-4xl md:text-5xl font-bold mt-2 text-white">
               {pageData.frontmatter.introTitle || "Rana Masud Biography"}
             </h1>
@@ -85,7 +89,7 @@ export default async function BiographyPage() {
           </div>
           <p className="text-white/80 leading-relaxed text-base md:text-lg">
             {pageData.frontmatter.introText ||
-              `Born on September 21, 1979, Rana Masud is a renowned Bangladeshi film director, producer, screenplay writer, and academic. Over his illustrious career spanning more than two decades, he has established himself as a prominent voice in both commercial advertising and independent short films. Through his production house, Ferywala Communications, he has directed nearly 300 TV commercials, documentaries, and narrative projects.`}
+              "Born on September 21, 1979, Rana Masud is a renowned Bangladeshi film director, producer, screenplay writer, and academic. Over his illustrious career spanning more than two decades, he has established himself as a prominent voice in both commercial advertising and independent short films."}
           </p>
         </div>
       </section>
@@ -94,7 +98,7 @@ export default async function BiographyPage() {
       <section className="flex flex-col gap-8">
         <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-3">
           <Briefcase className="text-gold-accent h-7 w-7" />
-          Professional Career
+          {pageData.frontmatter.timelineSectionTitle || "Professional Career"}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {professionalTimeline.map((item: any, index: number) => {
@@ -122,7 +126,7 @@ export default async function BiographyPage() {
         <div className="glass-card p-8 flex flex-col gap-6">
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
             <Users className="text-gold-accent h-5 w-5" />
-            Affiliations & Memberships
+            {pageData.frontmatter.membershipsSectionTitle || "Affiliations & Memberships"}
           </h2>
           <ul className="flex flex-col gap-3">
             {memberships.map((item: string, index: number) => (
@@ -139,7 +143,7 @@ export default async function BiographyPage() {
           <div className="flex flex-col gap-4">
             <h2 className="text-xl font-bold text-white flex items-center gap-2">
               <Award className="text-gold-accent h-5 w-5" />
-              Jury Service
+              {pageData.frontmatter.jurySectionTitle || "Jury Service"}
             </h2>
             <div className="flex flex-col gap-2 text-left">
               <h4 className="font-bold text-white text-sm">{juryEvent}</h4>

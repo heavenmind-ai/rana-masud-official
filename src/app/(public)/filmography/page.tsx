@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import React from "react";
 import { getPageBySlug } from "@/lib/content";
 import { Film, Award, Link as LinkIcon, Star, CheckCircle } from "lucide-react";
@@ -57,12 +59,16 @@ export default async function FilmographyPage() {
     <div className="container mx-auto px-4 py-16 flex flex-col gap-16">
       {/* Page Header */}
       <section className="text-center max-w-3xl mx-auto">
-        <p className="text-xs font-bold text-gold-accent tracking-widest uppercase">Works</p>
-        <h1 className="text-4xl md:text-5xl font-bold mt-2 text-white">Filmography</h1>
+        <p className="text-xs font-bold text-gold-accent tracking-widest uppercase">
+          {pageData.frontmatter.worksBadgeText || "Works"}
+        </p>
+        <h1 className="text-4xl md:text-5xl font-bold mt-2 text-white">
+          {pageData.frontmatter.worksTitle || "Filmography"}
+        </h1>
         <div className="h-0.5 w-16 bg-gold-accent mx-auto mt-4" />
         <p className="text-white/60 mt-6 leading-relaxed">
           {pageData.frontmatter.headerText ||
-            "Rana Masud's career is marked by a transition from high-level advertising conceptualization to deep narrative filmmaking, directing award-winning short films, and assisting legendary filmmaker Tanvir Mokammel."}
+            "Rana Masud's career is marked by a transition from high-level advertising conceptualization to deep narrative filmmaking."}
         </p>
       </section>
 
@@ -70,7 +76,7 @@ export default async function FilmographyPage() {
       <section className="flex flex-col gap-12">
         <h2 className="text-2xl font-bold text-white flex items-center gap-3">
           <Film className="h-6 w-6 text-gold-accent" />
-          Primary Showcase
+          {pageData.frontmatter.showcaseSectionTitle || "Primary Showcase"}
         </h2>
         <div className="flex flex-col gap-8">
           {films.map((film: any, index: number) => (
@@ -118,11 +124,11 @@ export default async function FilmographyPage() {
       <section className="glass-card p-8 flex flex-col gap-6 text-left">
         <h2 className="text-xl font-bold text-white flex items-center gap-3">
           <Star className="h-5 w-5 text-gold-accent" />
-          Assistant Director Credits
+          {pageData.frontmatter.assistantSectionTitle || "Assistant Director Credits"}
         </h2>
         <p className="text-sm text-white/60 leading-relaxed">
-          Rana Masud honed his practical directing capabilities and shot composition skills under the direct mentorship of
-          internationally acclaimed, legendary filmmaker <strong>Tanvir Mokammel</strong>:
+          {pageData.frontmatter.assistantSectionDescription ||
+            "Rana Masud honed his practical directing capabilities and shot composition skills under the direct mentorship of internationally acclaimed, legendary filmmaker Tanvir Mokammel:"}
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2">
           {assistantRoles.map((role: any, idx: number) => (
@@ -152,7 +158,7 @@ export default async function FilmographyPage() {
             className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-gold-accent/20 bg-gold-accent/5 hover:bg-gold-accent/15 text-gold-accent font-semibold text-sm transition-all"
           >
             <LinkIcon className="h-4 w-4" />
-            IMDb Profile
+            {pageData.frontmatter.imdbButtonText || "IMDb Profile"}
           </a>
         </div>
       </section>

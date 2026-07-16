@@ -1,6 +1,22 @@
 import React from "react";
 import Link from "next/link";
-import { LayoutDashboard, FileText, ArrowLeft, Shield, Settings } from "lucide-react";
+import {
+  LayoutDashboard,
+  ArrowLeft,
+  Shield,
+  Settings,
+  Home,
+  User,
+  Film,
+  Award,
+  Globe,
+  Image,
+  BookOpen,
+  Newspaper,
+  Tv,
+  Sparkles,
+  Mail,
+} from "lucide-react";
 
 export default function AdminLayout({
   children,
@@ -28,11 +44,81 @@ export default function AdminLayout({
               Dashboard
             </Link>
             <Link
-              href="/admin/pages"
+              href="/admin/home"
               className="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:text-white hover:bg-white/5 transition-all"
             >
-              <FileText className="h-4 w-4 text-gold-accent" />
-              Page Content
+              <Home className="h-4 w-4 text-gold-accent" />
+              Home Page
+            </Link>
+            <Link
+              href="/admin/biography"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:text-white hover:bg-white/5 transition-all"
+            >
+              <User className="h-4 w-4 text-gold-accent" />
+              Biography
+            </Link>
+            <Link
+              href="/admin/about"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:text-white hover:bg-white/5 transition-all"
+            >
+              <Sparkles className="h-4 w-4 text-gold-accent" />
+              About Banner
+            </Link>
+            <Link
+              href="/admin/filmography"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:text-white hover:bg-white/5 transition-all"
+            >
+              <Film className="h-4 w-4 text-gold-accent" />
+              Filmography
+            </Link>
+            <Link
+              href="/admin/awards"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:text-white hover:bg-white/5 transition-all"
+            >
+              <Award className="h-4 w-4 text-gold-accent" />
+              Awards
+            </Link>
+            <Link
+              href="/admin/festivals"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:text-white hover:bg-white/5 transition-all"
+            >
+              <Globe className="h-4 w-4 text-gold-accent" />
+              Festivals
+            </Link>
+            <Link
+              href="/admin/gallery"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:text-white hover:bg-white/5 transition-all"
+            >
+              <Image className="h-4 w-4 text-gold-accent" />
+              Gallery Manager
+            </Link>
+            <Link
+              href="/admin/blog"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:text-white hover:bg-white/5 transition-all"
+            >
+              <BookOpen className="h-4 w-4 text-gold-accent" />
+              Blog Manager
+            </Link>
+            <Link
+              href="/admin/press"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:text-white hover:bg-white/5 transition-all"
+            >
+              <Newspaper className="h-4 w-4 text-gold-accent" />
+              Press Coverage
+            </Link>
+            <Link
+              href="/admin/tv-shows"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:text-white hover:bg-white/5 transition-all"
+            >
+              <Tv className="h-4 w-4 text-gold-accent" />
+              TV Shows
+            </Link>
+            <Link
+              href="/admin/contact"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:text-white hover:bg-white/5 transition-all"
+            >
+              <Mail className="h-4 w-4 text-gold-accent" />
+              Contact Details
             </Link>
             <Link
               href="/admin/settings"
@@ -69,9 +155,7 @@ export default function AdminLayout({
           </div>
         </header>
 
-        <main className="flex-1 p-8 overflow-y-auto">
-          {children}
-        </main>
+        <main className="flex-1 p-8 overflow-y-auto">{children}</main>
       </div>
     </div>
   );
