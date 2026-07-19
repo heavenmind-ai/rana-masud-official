@@ -87,54 +87,89 @@ export default async function FilmographyPage() {
           <Film className="h-6 w-6 text-gold-accent" />
           {pageData.frontmatter.showcaseSectionTitle || "Primary Showcase"}
         </h2>
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-12">
           {films.map((film: any, index: number) => (
-            <div key={index} className="glass-card overflow-hidden grid grid-cols-1 lg:grid-cols-12 border border-white/5">
-              {/* Poster Cover */}
-              <div className="lg:col-span-4 relative aspect-[4/3] lg:aspect-square bg-zinc-950 flex items-center justify-center overflow-hidden border-r border-white/5">
-                {film.link ? (
-                  <a href={film.link} target="_blank" rel="noopener noreferrer" className="w-full h-full block group/poster">
-                    <img 
-                      src={film.image} 
-                      alt={film.title} 
-                      className="w-full h-full object-contain transition-transform duration-500 group-hover/poster:scale-105" 
-                    />
-                  </a>
-                ) : (
-                  <img 
-                    src={film.image} 
-                    alt={film.title} 
-                    className="w-full h-full object-contain" 
-                  />
-                )}
+            <div
+              key={index}
+              className="relative group overflow-hidden rounded-2xl border border-white/10 bg-zinc-950 shadow-2xl transition-all duration-500 hover:border-gold-accent/40"
+            >
+              {/* Card Ambient Background Glow */}
+              <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
+                <img
+                  src={film.image}
+                  alt=""
+                  className="w-full h-full object-contain object-center opacity-15 filter blur-xl scale-110 pointer-events-none"
+                />
+                <div className="absolute inset-0 bg-zinc-950/80 backdrop-blur-md" />
               </div>
-              {/* Content Panel */}
-              <div className="lg:col-span-8 p-8 flex flex-col justify-between gap-6 text-left">
-                <div className="flex flex-col gap-3">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded bg-gold-accent/10 border border-gold-accent/20 text-gold-accent text-xs font-semibold uppercase">
-                      {film.type}
-                    </span>
-                    <span className="text-xs text-white/40">{film.role}</span>
-                  </div>
-                  <h3 className="text-2xl font-bold text-white">{film.title}</h3>
-                  <p className="text-white/70 text-sm leading-relaxed">{film.description}</p>
+
+              {/* Main Grid Layout - 5 Cols Large Image / 7 Cols Content */}
+              <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 min-h-[480px]">
+                {/* Large Edge-to-Edge Poster Image Column */}
+                <div className="lg:col-span-5 relative w-full min-h-[380px] sm:min-h-[460px] lg:min-h-[500px] overflow-hidden border-b lg:border-b-0 lg:border-r border-white/10 group/poster">
+                  {film.link ? (
+                    <a
+                      href={film.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full h-full block relative"
+                    >
+                      <img
+                        src={film.image}
+                        alt={film.title}
+                        className="w-full h-full object-cover object-top lg:object-center transition-transform duration-700 group-hover/poster:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent lg:hidden" />
+                    </a>
+                  ) : (
+                    <div className="w-full h-full relative">
+                      <img
+                        src={film.image}
+                        alt={film.title}
+                        className="w-full h-full object-cover object-top lg:object-center transition-transform duration-700 group-hover/poster:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent lg:hidden" />
+                    </div>
+                  )}
+
+                  {/* Gradient Overlay for smooth edge transition into content panel */}
+                  <div className="hidden lg:block absolute inset-y-0 right-0 w-20 bg-gradient-to-r from-transparent to-zinc-950/80 pointer-events-none" />
                 </div>
 
-                <div className="flex flex-col gap-2">
-                  <h4 className="text-xs font-bold text-white/50 uppercase tracking-widest flex items-center gap-1.5">
-                    <Award className="h-3.5 w-3.5 text-gold-accent" />
-                    Festival Honors
-                  </h4>
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    {film.selections?.map((award: string, aIdx: number) => (
-                      <span
-                        key={aIdx}
-                        className="px-2.5 py-1 rounded bg-white/5 border border-white/10 text-white/80 text-xs font-medium"
-                      >
-                        {award}
+                {/* Right Content Panel */}
+                <div className="lg:col-span-7 p-6 sm:p-8 lg:p-10 flex flex-col justify-between gap-6 text-left">
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span className="px-3.5 py-1 rounded-md bg-gold-accent/15 border border-gold-accent/30 text-gold-accent text-xs font-bold uppercase tracking-wider shadow-sm">
+                        {film.type}
                       </span>
-                    ))}
+                      <span className="text-xs font-semibold text-white/50">{film.role}</span>
+                    </div>
+
+                    <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight group-hover:text-gold-accent transition-colors leading-snug">
+                      {film.title}
+                    </h3>
+
+                    <p className="text-white/80 text-sm sm:text-base leading-relaxed font-normal">
+                      {film.description}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col gap-3 pt-6 border-t border-white/10">
+                    <h4 className="text-xs font-bold text-gold-accent uppercase tracking-widest flex items-center gap-2">
+                      <Award className="h-4 w-4 text-gold-accent shrink-0" />
+                      Festival Honors & Selections
+                    </h4>
+                    <div className="flex flex-wrap gap-2.5 mt-1">
+                      {film.selections?.map((award: string, aIdx: number) => (
+                        <span
+                          key={aIdx}
+                          className="px-3.5 py-1.5 rounded-lg bg-white/10 backdrop-blur-md border border-white/15 text-white/90 text-xs font-medium shadow-sm hover:border-gold-accent/40 transition-colors"
+                        >
+                          {award}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
