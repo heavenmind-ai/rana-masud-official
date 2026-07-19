@@ -65,22 +65,25 @@ export default async function BlogFeedPage() {
 
             return (
               <div key={post.slug} className="glass-card overflow-hidden flex flex-col group border border-white/5">
-                <div className="relative aspect-video w-full bg-zinc-950">
+                <Link href={`/blog/${decodedSlug}`} className="relative aspect-video w-full bg-zinc-950 overflow-hidden block group/img cursor-pointer">
                   <img
                     src={imageSrc}
                     alt={post.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500"
                   />
-                </div>
+                  <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 transition-colors duration-300" />
+                </Link>
                 <div className="p-6 flex-1 flex flex-col justify-between gap-4 text-left">
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-1.5 text-xs text-white/40">
                       <Calendar className="h-3.5 w-3.5 text-gold-accent" />
                       <span>{dateStr}</span>
                     </div>
-                    <h3 className="text-lg font-bold text-white leading-snug group-hover:text-gold-accent transition-colors mt-1">
-                      {post.title}
-                    </h3>
+                    <Link href={`/blog/${decodedSlug}`} className="group/title cursor-pointer">
+                      <h3 className="text-lg font-bold text-white leading-snug group-hover/title:text-gold-accent transition-colors mt-1">
+                        {post.title}
+                      </h3>
+                    </Link>
                     <p className="text-white/60 text-xs mt-1 leading-relaxed line-clamp-3">
                       {summaryStr}
                     </p>
