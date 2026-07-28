@@ -18,6 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "gallery",
     "press",
     "tv-shows",
+    "ad-film",
     "contact",
     "blog",
   ].map((route) => ({

@@ -20,6 +20,7 @@ const defaultHeader = {
     { label: "Gallery", href: "/gallery" },
     { label: "Press", href: "/press" },
     { label: "TV Shows", href: "/tv-shows" },
+    { label: "AD Film", href: "/ad-film" },
     { label: "Blog", href: "/blog" },
     { label: "Contact", href: "/contact" },
   ],
@@ -55,6 +56,14 @@ async function getHeaderFooterSettings() {
     // Bulletproof fallback: if menuLinks is empty or missing in database, restore default links
     if (!header.menuLinks || header.menuLinks.length === 0) {
       header.menuLinks = defaultHeader.menuLinks;
+    }
+
+    // Ensure "AD Film" always appears after "TV Shows" in the nav (both DB and fallback menus)
+    const adFilmExists = header.menuLinks.some((l: any) => l.href === "/ad-film");
+    if (!adFilmExists) {
+      const tvShowsIndex = header.menuLinks.findIndex((l: any) => l.href === "/tv-shows");
+      const insertAt = tvShowsIndex >= 0 ? tvShowsIndex + 1 : header.menuLinks.length;
+      header.menuLinks.splice(insertAt, 0, { label: "AD Film", href: "/ad-film" });
     }
 
     // Bulletproof fallback: if socials is missing, empty, or not an array, use default list

@@ -21,6 +21,7 @@ import {
   Sparkles,
   Mail,
   LogOut,
+  Clapperboard,
 } from "lucide-react";
 
 export default async function AdminLayout({
@@ -136,6 +137,13 @@ export default async function AdminLayout({
             >
               <Tv className="h-4 w-4 text-gold-accent" />
               TV Shows
+            </Link>
+            <Link
+              href="/admin/ad-film"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:text-white hover:bg-white/5 transition-all"
+            >
+              <Clapperboard className="h-4 w-4 text-gold-accent" />
+              AD Film
             </Link>
             <Link
               href="/admin/contact"

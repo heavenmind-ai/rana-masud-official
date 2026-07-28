@@ -41,6 +41,7 @@ export default function AdminSettingsPage() {
       { label: "Gallery", href: "/gallery" },
       { label: "Press", href: "/press" },
       { label: "TV Shows", href: "/tv-shows" },
+      { label: "AD Film", href: "/ad-film" },
       { label: "Contact", href: "/contact" },
     ],
   });
