@@ -45,7 +45,7 @@ export default async function PressPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight">{titleText}</h1>
           
           <blockquote className="border-l-2 border-gold-accent pl-4 italic text-white/85 text-lg font-serif">
-            "{pressQuote}"
+            {'"'}{pressQuote}{'"'}
           </blockquote>
           
           <p className="text-white/60 text-sm leading-relaxed">{headerText}</p>

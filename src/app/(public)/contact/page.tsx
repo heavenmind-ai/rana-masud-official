@@ -20,7 +20,7 @@ export default async function ContactPage() {
 
   // Fetch phone, email, address, and socials from Global Settings
   let email = "info@ranamasudbd.com";
-  let emailFallback = "ranaferywala@gmail.com";
+  const emailFallback = "ranaferywala@gmail.com";
   let phone = "+8801711704545";
   let address = "Block: A, Road: 02, House: 73, Flat: A/9, Niketon, Dhaka, Bangladesh.";
   let socials = {

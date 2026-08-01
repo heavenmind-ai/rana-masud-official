@@ -278,7 +278,7 @@ export default function AdminPressPageEditor() {
                 />
               </div>
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] text-white/40 font-bold uppercase">Let's Talk Button Label</label>
+                <label className="text-[10px] text-white/40 font-bold uppercase">Let&apos;s Talk Button Label</label>
                 <input
                   type="text"
                   value={pressButtonText}

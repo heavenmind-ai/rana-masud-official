@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 export default async function AdminDashboardPage() {
-  let pagesCount = 6; // Standard base page editors
+  const pagesCount = 6; // Standard base page editors
   let galleryCount = 0;
   let blogsCount = 0;
 

@@ -108,7 +108,7 @@ export default function AdminBlogListPage() {
             <BookOpen className="h-7 w-7 text-gold-accent" />
             Blog Manager
           </h1>
-          <p className="text-sm text-white/50 mt-1">Write articles, publish press releases, and manage director's blog feed.</p>
+          <p className="text-sm text-white/50 mt-1">Write articles, publish press releases, and manage director&apos;s blog feed.</p>
         </div>
 
         <Link
@@ -199,7 +199,7 @@ export default function AdminBlogListPage() {
             <BookOpen className="w-12 h-12 text-white/20" />
             <div>
               <h3 className="font-bold text-white text-lg">No posts found</h3>
-              <p className="text-white/40 text-xs mt-1">Create your first blog post by clicking the "Create Post" button.</p>
+              <p className="text-white/40 text-xs mt-1">Create your first blog post by clicking the &quot;Create Post&quot; button.</p>
             </div>
           </div>
         ) : (
