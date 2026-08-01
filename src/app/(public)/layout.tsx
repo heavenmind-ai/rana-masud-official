@@ -1,4 +1,4 @@
-export const dynamic = "force-dynamic";
+export const revalidate = 3600; // ISR: revalidate every 1 hour (nav/footer settings cached)
 
 import React, { Suspense } from "react";
 import Link from "next/link";
