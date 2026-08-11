@@ -3,6 +3,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { GlobalSettings } from "@/models/GlobalSettings";
 import { cookies } from "next/headers";
 import { verifySession } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 export async function GET(req: NextRequest) {
   try {
@@ -64,6 +65,9 @@ export async function POST(req: NextRequest) {
       { $set: { data } },
       { upsert: true, new: true }
     );
+
+    // Revalidate paths for immediate update
+    revalidatePath("/", "layout");
 
     return NextResponse.json({ success: true, setting: result });
   } catch (error: any) {

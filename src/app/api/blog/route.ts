@@ -3,6 +3,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { Page } from "@/models/Page";
 import { cookies } from "next/headers";
 import { verifySession } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 export async function GET() {
   try {
@@ -55,6 +56,12 @@ export async function POST(req: NextRequest) {
     });
 
     await newPost.save();
+
+    // Revalidate paths for immediate update
+    revalidatePath("/blog");
+    revalidatePath(`/blog/${slug}`);
+    revalidatePath("/", "layout");
+
     return NextResponse.json({ success: true, post: newPost });
   } catch (error: any) {
     console.error("Failed to create blog post:", error);

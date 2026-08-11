@@ -14,9 +14,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://ranamasudbd.com";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(baseUrl),
   title: "Rana Masud | Film Director, Producer & Teacher",
   description: "Official portfolio website of Rana Masud - Film Director, Producer, and Teacher.",
+  alternates: {
+    canonical: "./",
+  },
 };
 
 export default function RootLayout({

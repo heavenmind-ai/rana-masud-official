@@ -1,4 +1,4 @@
-export const revalidate = 3600; // ISR: revalidate every 1 hour
+export const revalidate = 0;
 
 import React from "react";
 import Link from "next/link";
@@ -279,7 +279,7 @@ export default async function HomePage() {
             "@type": "Person",
             "name": "Rana Masud",
             "jobTitle": "Film Director, Producer & Teacher",
-            "url": "https://ranamasud.com",
+            "url": process.env.NEXT_PUBLIC_SITE_URL || "https://ranamasudbd.com",
             "sameAs": [
               "https://www.imdb.com/name/nm7851085/",
               "https://facebook.com",

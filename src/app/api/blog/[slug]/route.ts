@@ -3,6 +3,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { Page } from "@/models/Page";
 import { cookies } from "next/headers";
 import { verifySession } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 export async function GET(
   req: NextRequest,
@@ -64,6 +65,12 @@ export async function POST(
     post.frontmatter = updatedFrontmatter;
 
     await post.save();
+
+    // Revalidate paths for immediate update
+    revalidatePath("/blog");
+    revalidatePath(`/blog/${slug}`);
+    revalidatePath("/", "layout");
+
     return NextResponse.json({ success: true, post });
   } catch (error: any) {
     console.error("Failed to update blog post:", error);
@@ -93,6 +100,11 @@ export async function DELETE(
     if (!result) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
+
+    // Revalidate paths for immediate update
+    revalidatePath("/blog");
+    revalidatePath(`/blog/${slug}`);
+    revalidatePath("/", "layout");
 
     return NextResponse.json({ success: true, message: "Blog post deleted successfully!" });
   } catch (error: any) {

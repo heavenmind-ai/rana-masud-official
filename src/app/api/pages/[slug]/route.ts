@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getPageBySlug, savePageData } from "@/lib/content";
 import { cookies } from "next/headers";
 import { verifySession } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 export async function GET(
   request: NextRequest,
@@ -45,6 +46,11 @@ export async function POST(
     if (!success) {
       return NextResponse.json({ error: "Page save failed" }, { status: 500 });
     }
+
+    // Revalidate paths so updates show up immediately on live site
+    const targetPath = slug === "home" ? "/" : slug === "film-awards" ? "/awards" : `/${slug}`;
+    revalidatePath(targetPath);
+    revalidatePath("/", "layout");
 
     return NextResponse.json({ success: true, message: "Page saved successfully!" });
   } catch (error) {

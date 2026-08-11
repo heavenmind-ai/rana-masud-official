@@ -1,4 +1,4 @@
-export const revalidate = 3600; // ISR: revalidate every 1 hour
+export const revalidate = 0;
 
 import React from "react";
 import { getPageBySlug, generatePageMetadata } from "@/lib/content";
@@ -83,6 +83,35 @@ export default async function TvShowsPage() {
             </div>
           ))}
         </section>
+      )}
+
+      {/* JSON-LD VideoObject Structured Data for Google Video Indexing */}
+      {shows.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(
+              shows
+                .filter((show: any) => show.youtubeId)
+                .map((show: any) => ({
+                  "@context": "https://schema.org",
+                  "@type": "VideoObject",
+                  "name": show.title || "TV Show directed by Rana Masud",
+                  "description":
+                    show.description ||
+                    "Watch TV broadcast show directed and produced by Rana Masud.",
+                  "thumbnailUrl": [
+                    `https://img.youtube.com/vi/${show.youtubeId}/maxresdefault.jpg`,
+                    `https://img.youtube.com/vi/${show.youtubeId}/hqdefault.jpg`
+                  ],
+                  "uploadDate": show.date
+                    ? new Date(show.date).toISOString()
+                    : "2023-01-01T00:00:00Z",
+                  "embedUrl": `https://www.youtube.com/embed/${show.youtubeId}`
+                }))
+            )
+          }}
+        />
       )}
     </div>
   );

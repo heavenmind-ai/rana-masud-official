@@ -136,10 +136,14 @@ export async function generatePageMetadata(
     ? fm.seoKeywords.split(",").map((k: string) => k.trim()).filter(Boolean)
     : undefined;
 
+  const pagePath = slug === "home" ? "/" : `/${slug}`;
   const metadata: Metadata = {
     title,
     description,
     keywords,
+    alternates: {
+      canonical: pagePath,
+    },
   };
 
   if (fm.seoOgImage) {

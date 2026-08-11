@@ -1,4 +1,4 @@
-export const revalidate = 3600; // ISR: revalidate every 1 hour (nav/footer settings cached)
+export const revalidate = 0;
 
 import React, { Suspense } from "react";
 import Link from "next/link";

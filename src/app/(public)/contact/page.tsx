@@ -1,4 +1,4 @@
-export const revalidate = 3600; // ISR: revalidate every 1 hour (form submission handled via API route)
+export const revalidate = 0;
 
 import React from "react";
 import { getPageBySlug, generatePageMetadata } from "@/lib/content";

@@ -1,4 +1,4 @@
-export const revalidate = 3600; // ISR: revalidate every 1 hour
+export const revalidate = 0;
 
 import React from "react";
 import { getPageBySlug, generatePageMetadata } from "@/lib/content";
@@ -83,6 +83,35 @@ export default async function AdFilmPage() {
             </div>
           ))}
         </section>
+      )}
+
+      {/* JSON-LD VideoObject Structured Data for Google Video Indexing */}
+      {films.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(
+              films
+                .filter((film: any) => film.youtubeId)
+                .map((film: any) => ({
+                  "@context": "https://schema.org",
+                  "@type": "VideoObject",
+                  "name": film.title || "AD Film directed by Rana Masud",
+                  "description":
+                    film.description ||
+                    "Watch advertisement film directed and produced by Rana Masud.",
+                  "thumbnailUrl": [
+                    `https://img.youtube.com/vi/${film.youtubeId}/maxresdefault.jpg`,
+                    `https://img.youtube.com/vi/${film.youtubeId}/hqdefault.jpg`
+                  ],
+                  "uploadDate": film.date
+                    ? new Date(film.date).toISOString()
+                    : "2023-01-01T00:00:00Z",
+                  "embedUrl": `https://www.youtube.com/embed/${film.youtubeId}`
+                }))
+            )
+          }}
+        />
       )}
     </div>
   );
