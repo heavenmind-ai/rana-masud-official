@@ -1,38 +1,57 @@
-# Rana Masud - Official Portfolio & CMS Website
+# Rana Masud — Official Portfolio & CMS Website
 
 An elegant, fully-featured Next.js web application and content management system (CMS) built to showcase the professional work, filmography, awards, and gallery of film director, producer, and teacher **Rana Masud**.
 
-## 🚀 Technologies
+## 🚀 Tech Stack
 
-- **Frontend**: Next.js App Router, React, TailwindCSS, Lucide Icons, React Markdown
-- **Backend & Database**: MongoDB via Mongoose ORM
-- **Object Storage**: Cloudflare R2 (for large media files) with local directory uploads fallback (for assets <= 1MB)
-- **Styling**: Vanilla CSS custom variables mixed with modern dark-mode utility classes for a glassmorphism aesthetic
+| Layer | Technology |
+|---|---|
+| **Framework** | Next.js 16 (App Router), React 19, TypeScript |
+| **Styling** | Tailwind CSS v4, custom CSS variables, glassmorphism dark-mode |
+| **Database** | MongoDB via Mongoose ODM |
+| **Object Storage** | Cloudflare R2 (S3-compatible) — falls back to local `/public/content/uploads/` |
+| **Email** | Nodemailer (SMTP) |
+| **Auth** | Custom JWT (HS256) — no third-party auth dependencies |
+| **Icons** | Lucide React |
+| **Markdown** | gray-matter + react-markdown |
 
 ---
 
-## 🛠️ Features
+## ✨ Features
 
-### 1. Dynamic Public Pages
-All page contents are dynamically fetched from the database, fully styled with premium typography, fluid animations, and responsiveness:
-- **Home**: Dynamic hero slideshow, portfolio summary cards, and client logo marquee.
-- **Biography**: Interactive timeline view, professional affiliations, role cards, and notable work tables.
-- **Filmography**: Grid showcase of directed films with cast/crew summaries, selections, and IMDb integrations.
-- **Awards**: Dedicated laurel list detailing events, locations, and achievements.
-- **Festivals**: Split national and international screening directories.
-- **Gallery**: Photo gallery with categories, custom title descriptors, and modal lightboxes.
-- **Press & TV Shows**: Newspaper clipping grids, external articles list, and embedded YouTube show archives.
-- **Contact**: Secure query form with dynamic configurations.
+### Public Portfolio Pages
+All content is dynamically fetched from MongoDB and fully editable from the admin panel:
 
-### 2. Powerful Administrative CMS Panel (`/admin`)
-An advanced management system accessible via authenticated sessions to control the entire site's copy and visuals:
-- **Live State Editing**: Add, remove, and reorder nested documents (e.g. film credits, timeline rows, gallery entries).
-- **R2 Media Uploads**: High-speed upload integration direct to bucket storage.
-- **Inbox Management**: Review user-submitted contact inquiries, toggle read status, and manage notification copy emails.
+- **Home** — Cinematic hero slideshow, services grid, notable films, festival laurels marquee, client logos marquee
+- **Biography** — Interactive professional timeline, affiliations, role cards, notable works table
+- **Filmography** — Grid showcase with cast/crew details, selections, and IMDb links
+- **Awards** — Laurel list with event, location, and achievement details
+- **Festivals** — National and international screening directories
+- **Gallery** — Photo gallery with categories and modal lightboxes
+- **Ad Films** — TVC/PSA portfolio with brand logos
+- **Press** — Newspaper clippings, article links
+- **TV Shows** — Embedded YouTube archive
+- **Blog** — Full markdown blog with individual post pages
+- **Contact** — Secure form with SMTP email delivery
 
-### 3. Dynamic SEO Control System
-- **Admin Side Panel**: Integrated `<SEOControl />` component in all admin pages with focus keyword lists, optimal length character counters, and Open Graph image banners.
-- **Next.js dynamic metadata**: Real-time generation of SEO meta tags (`title`, `description`, `keywords`, `openGraph`) based on values synced from MongoDB.
+### Admin CMS Panel (`/admin`)
+A full-featured content management system behind JWT authentication:
+
+- **Live content editing** for all 12+ page sections
+- **Nested document management** — add, reorder, and remove entries (films, timeline rows, gallery items, etc.)
+- **Media uploads** to Cloudflare R2 storage
+- **Blog management** — create, edit, and delete posts with markdown editor
+- **Contact inbox** — review submissions, toggle read status
+- **SEO controls** — live metadata editor with focus keyword hints and character counters
+- **Admin settings** — change email and password securely
+
+### Technical Highlights
+- `output: "standalone"` — self-contained build for cPanel and VPS deployment
+- Custom middleware for legacy path redirects and crawl-trap cleanup
+- Dynamic SEO metadata via `generateMetadata()` synced from MongoDB
+- JSON-LD structured data (Person schema) on the homepage
+- Dynamic sitemap (`/sitemap.xml`) and robots (`/robots.txt`)
+- Analytics tracking model with page-view counting
 
 ---
 
@@ -40,49 +59,70 @@ An advanced management system accessible via authenticated sessions to control t
 
 ### Prerequisites
 
-- Node.js (v18 or higher recommended)
-- MongoDB Database URI
-- Cloudflare R2 Bucket credentials (optional, falls back to local storage)
+- Node.js 20+
+- MongoDB URI (MongoDB Atlas recommended)
+- Cloudflare R2 credentials *(optional — local file fallback available)*
 
 ### Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/heavenmind-ai/rana-masud-official.git
-   cd rana-masud-official
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Configure environment variables. Create a `.env.local` file in the root directory:
-   ```env
-   # MongoDB URI
-   MONGODB_URI=your_mongodb_connection_string
-
-   # Cloudflare R2 Configurations (Optional)
-   R2_ENDPOINT=https://your-account-id.r2.cloudflarestorage.com
-   R2_ACCESS_KEY_ID=your_access_key_id
-   R2_SECRET_ACCESS_KEY=your_secret_access_key
-   R2_BUCKET_NAME=your_bucket_name
-   R2_PUBLIC_URL=https://pub-your-public-url.r2.dev
-   ```
-
-4. Run the development server:
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:3000](http://localhost:3000) to see the site.
-
-### Deployment & Production Build
-
-To build the project for production:
 ```bash
-npm run build
-npm run start
+# 1. Clone the repository
+git clone https://github.com/heavenmind-ai/rana-masud-official.git
+cd rana-masud-official
+
+# 2. Install dependencies
+yarn install
+
+# 3. Create environment file
+cp .env.example .env.local  # or create manually
 ```
+
+### Environment Variables
+
+Create a `.env.local` file in the root:
+
+```env
+# Required
+MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>.mongodb.net/<dbname>
+JWT_SECRET=your-super-secret-key-min-32-chars
+NEXT_PUBLIC_SITE_URL=https://yourdomain.com
+
+# Optional — Cloudflare R2 Storage
+R2_ACCOUNT_ID=your-cloudflare-account-id
+R2_ACCESS_KEY_ID=your-r2-access-key-id
+R2_SECRET_ACCESS_KEY=your-r2-secret-access-key
+R2_BUCKET_NAME=your-bucket-name
+R2_PUBLIC_URL=https://pub-xxxxxxxx.r2.dev
+
+# Optional — SMTP for contact form
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your@email.com
+SMTP_PASS=your-app-password
+```
+
+### Run Locally
+
+```bash
+yarn dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) — Admin panel at [http://localhost:3000/admin](http://localhost:3000/admin).
+
+### Production Build
+
+```bash
+yarn build
+yarn start
+```
+
+---
+
+## 🚢 Deployment
+
+This project supports deployment on **cPanel (Node.js)**, **Railway**, and **VPS/Linux servers**.
+
+👉 See the full step-by-step guide: **[DEPLOYMENT.md](./DEPLOYMENT.md)**
 
 ---
 
@@ -90,16 +130,18 @@ npm run start
 
 ```
 ├── src/
-│   ├── app/                     # Next.js App Router pages and APIs
-│   │   ├── (public)/            # Public-facing portfolio pages
-│   │   ├── admin/               # Admin panel pages & editors
-│   │   └── api/                 # Database, contact, & upload API routes
-│   ├── components/              # Shared client/server React components
-│   ├── lib/                     # Database client & content helper systems
-│   └── models/                  # Mongoose data schemas (Page, GlobalSettings, etc.)
-├── public/                      # Static assets & local uploads fallback
-├── package.json                 # Project dependencies & script keys
-└── tsconfig.json                # TypeScript configurations
+│   ├── app/
+│   │   ├── (public)/            # Public portfolio pages
+│   │   ├── admin/               # Admin CMS panel (14 sections)
+│   │   └── api/                 # REST API routes
+│   ├── components/              # Shared React components
+│   ├── lib/                     # DB client, auth, content helpers, R2 client
+│   └── models/                  # Mongoose schemas (Page, GlobalSettings, Message, Analytics)
+├── public/                      # Static assets & local upload fallback
+├── DEPLOYMENT.md                # Hosting & deployment guide
+├── next.config.ts               # Next.js config (standalone output)
+├── package.json
+└── tsconfig.json
 ```
 
 ---

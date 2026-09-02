@@ -26,6 +26,10 @@ lerna-debug.log*
 # vercel
 .vercel
 
+# deployment build artifacts
+/cpanel-upload/
+cpanel-upload.zip
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
