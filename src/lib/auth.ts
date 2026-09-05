@@ -87,10 +87,11 @@ export async function saveAdminCredentials(email: string, password?: string) {
 /**
  * Create a cryptographically signed JSON Web Token (JWT) with HS256 signature algorithm
  */
-export async function createSession(email: string, passwordHash: string): Promise<string> {
+export async function createSession(email: string, passwordHash: string, rememberMe = false): Promise<string> {
   const header = { alg: "HS256", typ: "JWT" };
-  // Expire in 7 days
-  const expiry = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7;
+  // Expire in 10 years if rememberMe is true, else 7 days
+  const expirySeconds = rememberMe ? 60 * 60 * 24 * 365 * 10 : 60 * 60 * 24 * 7;
+  const expiry = Math.floor(Date.now() / 1000) + expirySeconds;
   const payload = {
     email: email.trim().toLowerCase(),
     exp: expiry,
