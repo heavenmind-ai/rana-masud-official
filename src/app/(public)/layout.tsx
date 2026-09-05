@@ -1,4 +1,4 @@
-export const revalidate = 0;
+export const revalidate = 86400; // ISR: cache for 24 hours, automatically revalidated via on-demand revalidatePath on CMS save
 
 import React, { Suspense } from "react";
 import Link from "next/link";

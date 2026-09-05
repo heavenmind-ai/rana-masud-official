@@ -1,4 +1,4 @@
-export const revalidate = 0;
+export const revalidate = 86400; // ISR: revalidate cache daily, form submissions handled via API route
 
 import React from "react";
 import { getPageBySlug, generatePageMetadata } from "@/lib/content";
