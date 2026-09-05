@@ -4,30 +4,7 @@ import type { NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
-  // Ignore static assets, _next internal requests, admin routes, and API routes
-  if (
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/api") ||
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/content") ||
-    pathname.includes(".")
-  ) {
-    return NextResponse.next();
-  }
-
-  // Intercept legacy spam / e-commerce paths (/detail/*, /ctg/*) and 301-redirect to homepage
-  const lowerPath = pathname.toLowerCase();
-  if (
-    lowerPath.startsWith("/detail/") ||
-    lowerPath.startsWith("/detail") ||
-    lowerPath.startsWith("/ctg/") ||
-    lowerPath.startsWith("/ctg")
-  ) {
-    const cleanUrl = new URL("/", request.url);
-    return NextResponse.redirect(cleanUrl, 301);
-  }
-
-  // Check for invalid query parameters or item crawl traps (e.g. ?items/..., ?ctgItemCd=...)
+  // Only run logic if there is a query string that could be an item crawl trap
   if (search) {
     const rawQuery = search.toLowerCase();
     if (
@@ -50,11 +27,9 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
+     * Match root and public pages only, skipping static files, images, APIs, and admin routes
      */
-    "/((?!_next/static|_next/image|favicon.ico).*)",
+    "/((?!_next/static|_next/image|content|api|admin|favicon.ico|.*\\..*).*)",
   ],
 };
+
