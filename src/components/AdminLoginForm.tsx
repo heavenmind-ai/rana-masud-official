@@ -6,9 +6,29 @@ import { Shield, Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 export default function AdminLoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+
+  // Load saved credentials from localStorage on mount if "remember me" was previously chosen
+  React.useEffect(() => {
+    try {
+      const savedEmail = localStorage.getItem("admin_remember_email");
+      const savedPassword = localStorage.getItem("admin_remember_password");
+      const savedRemember = localStorage.getItem("admin_remember_me");
+
+      if (savedRemember === "true" && savedEmail) {
+        setEmail(savedEmail);
+        setRememberMe(true);
+        if (savedPassword) {
+          setPassword(savedPassword);
+        }
+      }
+    } catch (err) {
+      console.warn("Could not read credentials from localStorage:", err);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,13 +46,28 @@ export default function AdminLoginForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, rememberMe }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
         throw new Error(data.error || "Login failed. Please try again.");
+      }
+
+      // If Remember Me is checked, persist credentials in localStorage permanently
+      try {
+        if (rememberMe) {
+          localStorage.setItem("admin_remember_email", email.trim().toLowerCase());
+          localStorage.setItem("admin_remember_password", password);
+          localStorage.setItem("admin_remember_me", "true");
+        } else {
+          localStorage.removeItem("admin_remember_email");
+          localStorage.removeItem("admin_remember_password");
+          localStorage.removeItem("admin_remember_me");
+        }
+      } catch (storageErr) {
+        console.warn("LocalStorage write error:", storageErr);
       }
 
       // Refresh the page so the Server Component layout re-evaluates the authentication state
@@ -120,11 +155,26 @@ export default function AdminLoginForm() {
             </div>
           </div>
 
+          {/* Remember Me Option */}
+          <div className="flex items-center justify-between pt-1">
+            <label className="flex items-center gap-2 cursor-pointer select-none text-xs text-white/70 hover:text-white transition-colors">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 rounded border-white/20 bg-white/5 accent-gold-accent focus:ring-0 focus:outline-none cursor-pointer"
+                disabled={loading}
+              />
+              <span>Remember me</span>
+            </label>
+            <span className="text-[10px] text-white/40">Saves session securely</span>
+          </div>
+
           {/* Action button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-4 py-2.5 rounded-lg bg-gold-accent hover:bg-gold-hover disabled:bg-white/10 disabled:text-white/40 text-black text-xs font-bold uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 shadow-lg hover:shadow-gold-accent/20"
+            className="w-full mt-2 py-2.5 rounded-lg bg-gold-accent hover:bg-gold-hover disabled:bg-white/10 disabled:text-white/40 text-black text-xs font-bold uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 shadow-lg hover:shadow-gold-accent/20"
           >
             {loading ? (
               <>
